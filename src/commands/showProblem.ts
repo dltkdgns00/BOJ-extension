@@ -64,9 +64,9 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
     const panel = vscode.window.createWebviewPanel(
       'problemPreview',
       `${title}`,
-      vscode.ViewColumn.One,
+      vscode.ViewColumn.Two,
       {
-        enableScripts: true, // 스크립트 비활성화
+        enableScripts: true
       }
     );
 

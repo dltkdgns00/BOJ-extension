@@ -16,6 +16,10 @@
       {
         "command": "BOJ-EX.showProblem",
         "title": "BOJ: Show Problem"
+      },
+      {
+        "command": "BOJ-EX.headerComment",
+        "title": "BOJ: Header Comment"
       }
     ]
   },
@@ -42,10 +46,13 @@
     "typescript": "^5.1.3"
   },
   "dependencies": {
+    "@types/wcwidth": "^1.0.0",
     "axios": "^1.4.0",
     "cheerio": "^1.0.0-rc.12",
     "iconv-lite": "^0.6.3",
     "markdown-it": "^13.0.1",
-    "mathjax": "^3.2.2"
+    "mathjax": "^3.2.2",
+    "string-width": "^6.1.0",
+    "wcwidth": "^1.0.1"
   }
 }

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { showProblem } from './commands/showProblem';
+import { headerComment } from './commands/headerComment';
 
 export function activate(context: vscode.ExtensionContext)
 {
@@ -25,6 +26,14 @@ export function activate(context: vscode.ExtensionContext)
 					vscode.window.showInformationMessage("문제 번호를 입력해주세요.");
 				}
 			});
+		})
+	);
+
+	// headerComment 커맨드 등록
+	context.subscriptions.push(
+		vscode.commands.registerCommand('BOJ-EX.headerComment', () =>
+		{
+			headerComment();
 		})
 	);
 }
