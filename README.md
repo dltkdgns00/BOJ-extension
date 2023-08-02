@@ -18,6 +18,10 @@ BOJ-EX 확장 배포
 BOJ-EX 설정 파일 생성
 feat: 문제 번호 입력시 파일 생성 및 문제 검색 후 헤더 자동 생성
 
+### 1.0.2
+
+아이콘 적용
+
 ---
 
 ## For more information

@@ -2,11 +2,12 @@
   "name": "BOJ-EX",
   "displayName": "BOJ-extension",
   "description": "백준 온라인 저지를 할때 편리할법한 기능을 제공합니다.",
+  "icon": "images/icon.png",
   "repository": "https://github.com/dltkdgns00/BOJ-extension",
-  "author": "ckcks12 <wyoducc@gmail.com>",
+  "author": "dltkdgns00 <dltkdgns00.dev@gmail.com>",
   "license": "MIT",
   "publisher": "dltkdgns00",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "engines": {
     "vscode": "^1.80.0"
   },
