@@ -1,15 +1,11 @@
 import * as vscode from 'vscode';
 
-async function getUserInput(): Promise<{ author: string; authorUrl: string; url: string; problemNumber: string }>
+async function getUserInput(problemNumber: string): Promise<{ author: string; authorUrl: string; url: string; problemNumber: string }>
 {
-    const problemNumber = await vscode.window.showInputBox({ prompt: 'Enter the problem number:' });
-    if (!problemNumber)
-    {
-        throw new Error('Number is required.');
-    }
 
+    const config = vscode.workspace.getConfiguration('BOJ');
+    const author = config.get<string>('author', '');
 
-    const author = await vscode.window.showInputBox({ prompt: 'Enter the author:' });
     if (!author)
     {
         throw new Error('Author is required.');
@@ -94,7 +90,7 @@ function hasHeaderComment(): boolean
     const firstLine = editor.document.lineAt(0).text;
     return firstLine.startsWith('/* ************************************************************************** */');
 }
-export async function headerComment()
+export async function headerComment(problemNumber: string)
 {
     if (hasHeaderComment())
     {
@@ -102,13 +98,12 @@ export async function headerComment()
         return;
     }
 
-    const headerInfo = await getUserInput();
+    const headerInfo = await getUserInput(problemNumber);
 
     const editor = vscode.window.activeTextEditor;
-    const uri = editor!.document.uri;
-    // 파일 이름에서 확장자 추출
-    const extensionMatch = uri.path.match(/\.(\w+)$/);
-    const extension = extensionMatch ? extensionMatch[1] : null;
+    const config = vscode.workspace.getConfiguration('BOJ');
+    const extension = config.get<string>('extension', '');
+
     if (!editor)
     {
         vscode.window.showErrorMessage('No active text editor found.');

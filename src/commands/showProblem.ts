@@ -23,7 +23,6 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
 
     // 본문 추출
     const description = $('#problem_description').text();
-    console.log(description);
 
     // 입력, 출력, 예제 입력, 예제 출력 추출
     const input = $('#problem_input').html();
@@ -54,7 +53,6 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
 
     // 힌트 추출
     const hint = $('#problem_hint').html();
-    console.log(hint);
 
     // 출처 추출
     const source = $('#source').html();
