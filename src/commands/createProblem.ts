@@ -6,7 +6,7 @@ import { headerComment } from './headerComment';
 
 export function createProblem(context: vscode.ExtensionContext)
 {
-    vscode.window.showInputBox({ prompt: '문제 번호를 입력해주세요:' }).then(async problemNumber =>
+    vscode.window.showInputBox({ prompt: '문제 번호를 입력해주세요.', placeHolder: '예: 1000' }).then(async problemNumber =>
     {
         if (!problemNumber)
         {

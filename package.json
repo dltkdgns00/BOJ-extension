@@ -52,7 +52,7 @@
         "BOJ.extension": {
           "type": "string",
           "default": "",
-          "description": "선호하는 언어의 확장자명을 적어주세요 (ex: cpp, java, py)"
+          "description": "선호하는 언어의 확장자명을 적어주세요 (ex: cpp, py, java, etc...)"
         }
       }
     }
