@@ -5,7 +5,17 @@ import { createProblem } from './commands/createProblem';
 
 export function activate(context: vscode.ExtensionContext)
 {
-	console.log('Congratulations, your extension "BOJ-EX" is now active!');
+	// 확장프로그램이 처음 실행될 때, 설정이 되어있지 않으면 설정창을 띄워준다.
+	const config = vscode.workspace.getConfiguration('BOJ');
+	const extension = config.get<string>('extension', '');
+	const author = config.get<string>('author', '');
+	if (extension === undefined || author === undefined || extension === '' || author === '')
+	{
+		vscode.window.showInformationMessage('BOJ-EX를 설치해주셔서 감사합니다. 사용 전 설정을 해주세요.');
+
+		vscode.commands.executeCommand('workbench.action.openSettings', 'BOJ-extension');
+	}
+
 
 	// showProblem 커맨드 등록
 	context.subscriptions.push(
