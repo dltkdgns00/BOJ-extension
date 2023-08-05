@@ -1,62 +1,17 @@
 import * as vscode from 'vscode';
-import axios from 'axios';
-import * as cheerio from 'cheerio';
+import { searchProblem } from '../libs/searchProblem';
+import { tierAxios } from '../libs/solvedacAxios';
+import { solvedEfficiency } from '../libs/solvedEfficiency';
 
 export async function showProblem(problemNumber: string, context: vscode.ExtensionContext)
 {
   try
   {
-    const response = await axios.get(`https://www.acmicpc.net/problem/${problemNumber}`, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-      },
-      responseType: 'arraybuffer', // Response 데이터를 바이너리 데이터로 받도록 설정
-    });
+    const sp = await searchProblem(problemNumber, context);
+    console.log(sp);
+    const tier = await tierAxios(problemNumber);
 
-    const htmlData = response.data.toString('utf-8'); // 바이너리 데이터를 문자열로 변환
-
-    // Cheerio를 사용하여 HTML 파싱
-    const $ = cheerio.load(htmlData);
-
-    // 제목 추출
-    const title = $('title').text();
-
-    // 본문 추출
-    const description = $('#problem_description').text();
-
-    // 입력, 출력, 예제 입력, 예제 출력 추출
-    const input = $('#problem_input').html();
-    const output = $('#problem_output').html();
-
-    // 제한 추출
-    const limit = $('#problem_limit').html();
-
-    // 예제 입력, 예제 출력 추출 (배열로 처리)
-    const sampleInputs: string[] = [];
-    const sampleOutputs: string[] = [];
-
-    let i = 1;
-    while (true)
-    {
-      const sampleInput = $(`#sample-input-${i}`).html();
-      const sampleOutput = $(`#sample-output-${i}`).html();
-
-      if (!sampleInput || !sampleOutput)
-      {
-        break;
-      }
-
-      sampleInputs.push(sampleInput);
-      sampleOutputs.push(sampleOutput);
-      i++;
-    }
-
-    // 힌트 추출
-    const hint = $('#problem_hint').html();
-
-    // 출처 추출
-    const source = $('#source').html();
-
+    const title = `${problemNumber}번: ${sp.title}`;
 
     // 웹뷰 생성
     const panel = vscode.window.createWebviewPanel(
@@ -67,6 +22,8 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
         enableScripts: true
       }
     );
+
+    solvedEfficiency(problemNumber, context);
 
     // 웹뷰에 백준 온라인 저지 스타일과 문제 데이터 출력
     panel.webview.html = `
@@ -122,13 +79,24 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
 <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
       </head>
       <body>
-        <h1>${title}</h1>
+        <h1 style="display:inline">
+          ${title}
+        </h1>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <h3 style="display:inline">
+          <img src="${tier.svg}" class="solvedac-tier">
+          <span>${tier.name}</span>
+        </h3>
+        <br>
+        <table>
+          ${sp.info}
+        </table>
         <section id="description" class="problem-section">
           <div class="headline">
             <h2>문제</h2>
           </div>
           <div id="problem_description" class="problem-text">
-            ${description}
+            ${sp.description}
           </div>
         </section>
 
@@ -137,7 +105,7 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
             <h2>입력</h2>
           </div>
           <div id="problem_input" class="problem-text">
-            ${input}
+            ${sp.input}
           </div>
         </section>
 
@@ -146,24 +114,24 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
             <h2>출력</h2>
           </div>
           <div id="problem_output" class="problem-text">
-            ${output}
+            ${sp.output}
           </div>
         </section>
 
-        ${limit!.trim() !== '' ? `
+        ${sp.limit!.trim() !== '' ? `
           <section id="limit" class="problem-section">
             <div class="headline">
               <h2>제한</h2>
             </div>
             <div id="problem_limit" class="problem-text">
-              ${limit}
+              ${sp.limit}
             </div>
           </section>
           ` : '<div id="limit" class="problem-section hidden"></div>'
       }
 
         <section id="sample-IOs" class="problem-section">
-            ${sampleInputs.map((input, index) => `
+            ${sp.sampleInputs!.map((input, index) => `
               <div class="sample-container">
                 <div class="sample-box">
                   <h2>예제 입력 ${index + 1}</h3>
@@ -171,19 +139,19 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
                 </div>
                 <div class="sample-box">
                   <h2>예제 출력 ${index + 1}</h3>
-                  <pre class="sampledata">${sampleOutputs[index]}</pre>
+                  <pre class="sampledata">${sp.sampleOutputs![index]}</pre>
                 </div>
               </div>
             `).join('')}
         </section>
 
-        ${hint!.trim() !== '' ? `
+        ${sp.hint!.trim() !== '' ? `
           <section id="hint" class="problem-section">
             <div class="headline">
               <h2>힌트</h2>
             </div>
             <div id="problem_hint" class="problem-text">
-              ${hint}
+              ${sp.hint}
             </div>
           </section>
           ` : '<div id="hint" class="problem-section hidden"></div>'
@@ -191,7 +159,7 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
 
         <section id="source" class="problem-section">
           <div id="source" class="problem-text">
-            ${source}
+            ${sp.source}
           </div>
         </section>
       </body>
