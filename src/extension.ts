@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { showProblem } from './commands/showProblem';
 import { headerComment } from './commands/headerComment';
 import { createProblem } from './commands/createProblem';
+import { pushToGithub } from './commands/pushToGithub';
+import { makeWorkflow } from './libs/makeWorkflow';
 
 export function activate(context: vscode.ExtensionContext)
 {
@@ -68,6 +70,23 @@ export function activate(context: vscode.ExtensionContext)
 			createProblem(context);
 		})
 	);
+
+	// pushToGithub 커맨드 등록
+	context.subscriptions.push(
+		vscode.commands.registerCommand('BOJ-EX.pushToGithub', () =>
+		{
+			pushToGithub();
+		}
+		));
+
+	// makeWorkflow 커맨드 등록
+	context.subscriptions.push(
+		vscode.commands.registerCommand('BOJ-EX.makeWorkflow', () =>
+		{
+			makeWorkflow();
+		}
+		));
+
 }
 
 export function deactivate() { }

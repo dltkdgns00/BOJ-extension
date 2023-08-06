@@ -5,7 +5,6 @@ import { showProblem } from './showProblem';
 import { headerComment } from './headerComment';
 import { searchProblem } from '../libs/searchProblem';
 import { tierAxios } from '../libs/solvedacAxios';
-import { solvedEfficiency } from '../libs/solvedEfficiency';
 
 export function createProblem(context: vscode.ExtensionContext)
 {
@@ -24,7 +23,6 @@ export function createProblem(context: vscode.ExtensionContext)
 
             const sp = await searchProblem(problemNumber, context);
             const tier = await tierAxios(problemNumber);
-            const se = await solvedEfficiency(problemNumber, context);
 
 
             // 제목 추출
@@ -45,8 +43,7 @@ export function createProblem(context: vscode.ExtensionContext)
             const readmeUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders![0].uri, folderName, readme);
 
             // README.md 파일 내용
-            console.log(sp.description);
-            const readmeContent = `# ${problemNumber}번: ${problemName} - <img src="${tier.svg}" style="height:20px" /> ${tier.name}\n\n## 문제\n\n${sp.description}\n\n## 입력\n\n${sp.input}\n\n## 출력\n\n${sp.output}\n\n## 소스코드\n\n[소스코드 보기](${fileName.replace(/ /g, '%20')})`;
+            const readmeContent = `# ${problemNumber}번: ${problemName} - <img src="${tier.svg}" style="height:20px" /> ${tier.name}\n\n<!-- performance -->\n\n<!-- 문제 제출 후 깃허브에 푸시를 했을 때 제출한 코드의 성능이 입력될 공간입니다.-->\n\n<!-- end -->\n\n## 문제\n\n[문제 링크](https://boj.kr/${problemNumber})\n\n${sp.description}\n\n## 입력\n\n${sp.input}\n\n## 출력\n\n${sp.output}\n\n## 소스코드\n\n[소스코드 보기](${fileName.replace(/ /g, '%20')})`;
             const encoder = new TextEncoder();
             const readmeData = encoder.encode(readmeContent);
 
@@ -81,5 +78,3 @@ export function createProblem(context: vscode.ExtensionContext)
         }
     });
 }
-
-const content = ``;

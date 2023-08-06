@@ -7,7 +7,7 @@
   "author": "dltkdgns00 <dltkdgns00.dev@gmail.com>",
   "license": "MIT",
   "publisher": "dltkdgns00",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -38,6 +38,14 @@
       {
         "command": "BOJ-EX.createProblem",
         "title": "BOJ: Create Problem File"
+      },
+      {
+        "command": "BOJ-EX.pushToGithub",
+        "title": "BOJ: Push to Github"
+      },
+      {
+        "command": "BOJ-EX.makeWorkflow",
+        "title": "BOJ: Make Workflow"
       }
     ],
     "configuration": {
@@ -86,6 +94,7 @@
     "iconv-lite": "^0.6.3",
     "markdown-it": "^13.0.1",
     "mathjax": "^3.2.2",
+    "simple-git": "^3.19.1",
     "string-width": "^6.1.0",
     "wcwidth": "^1.0.1"
   }

@@ -1,14 +1,12 @@
 import * as vscode from 'vscode';
 import { searchProblem } from '../libs/searchProblem';
 import { tierAxios } from '../libs/solvedacAxios';
-import { solvedEfficiency } from '../libs/solvedEfficiency';
 
 export async function showProblem(problemNumber: string, context: vscode.ExtensionContext)
 {
   try
   {
     const sp = await searchProblem(problemNumber, context);
-    console.log(sp);
     const tier = await tierAxios(problemNumber);
 
     const title = `${problemNumber}번: ${sp.title}`;
@@ -22,8 +20,6 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
         enableScripts: true
       }
     );
-
-    solvedEfficiency(problemNumber, context);
 
     // 웹뷰에 백준 온라인 저지 스타일과 문제 데이터 출력
     panel.webview.html = `
