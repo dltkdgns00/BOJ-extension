@@ -1,5 +1,34 @@
 import * as vscode from 'vscode';
 
+export async function headerComment(problemNumber: string)
+{
+    if (hasHeaderComment())
+    {
+        vscode.window.showErrorMessage('헤더 주석이 이미 존재합니다.');
+        return;
+    }
+
+    const headerInfo = await getUserInput(problemNumber);
+
+    const editor = vscode.window.activeTextEditor;
+    const config = vscode.workspace.getConfiguration('BOJ');
+    const extension = config.get<string>('extension', '');
+
+    if (!editor)
+    {
+        vscode.window.showErrorMessage('No active text editor found.');
+        return;
+    }
+
+    const headerComment = generateHeaderComment(headerInfo, extension!);
+    editor.edit((editBuilder) =>
+    {
+        editBuilder.insert(editor.document.positionAt(0), headerComment);
+    });
+
+    vscode.window.showInformationMessage('헤더 주석이 생성되었습니다.');
+}
+
 async function getUserInput(problemNumber: string): Promise<{ author: string; authorUrl: string; url: string; problemNumber: string }>
 {
 
@@ -8,7 +37,7 @@ async function getUserInput(problemNumber: string): Promise<{ author: string; au
 
     if (!author)
     {
-        throw new Error('Author is required.');
+        throw new Error('author가 설정되지 않았습니다');
     }
 
     const authorUrl = "boj.kr/u/" + author;
@@ -78,46 +107,6 @@ function generateHeaderComment(headerInfo: { problemNumber: string; author: stri
     return headerComment.join('');
 }
 
-function hasHeaderComment(): boolean
-{
-    const editor = vscode.window.activeTextEditor;
-    if (!editor)
-    {
-        vscode.window.showErrorMessage('No active text editor found.');
-        return false;
-    }
-
-    const firstLine = editor.document.lineAt(0).text;
-    return firstLine.startsWith('/* ************************************************************************** */');
-}
-export async function headerComment(problemNumber: string)
-{
-    if (hasHeaderComment())
-    {
-        vscode.window.showErrorMessage('Header comment already exists.');
-        return;
-    }
-
-    const headerInfo = await getUserInput(problemNumber);
-
-    const editor = vscode.window.activeTextEditor;
-    const config = vscode.workspace.getConfiguration('BOJ');
-    const extension = config.get<string>('extension', '');
-
-    if (!editor)
-    {
-        vscode.window.showErrorMessage('No active text editor found.');
-        return;
-    }
-
-    const headerComment = generateHeaderComment(headerInfo, extension!);
-    editor.edit((editBuilder) =>
-    {
-        editBuilder.insert(editor.document.positionAt(0), headerComment);
-    });
-
-    vscode.window.showInformationMessage('Custom header comment inserted successfully.');
-}
 function replaceCharacterAtIndex(str: string, index: number, newChar: string): string
 {
     const chars = str.split(''); // 문자열을 배열로 변환
@@ -131,4 +120,17 @@ function replaceCharacterAtIndex(str: string, index: number, newChar: string): s
     }
 
     return chars.join(''); // 배열을 다시 문자열로 합치기
+}
+
+function hasHeaderComment(): boolean
+{
+    const editor = vscode.window.activeTextEditor;
+    if (!editor)
+    {
+        vscode.window.showErrorMessage('No active text editor found.');
+        return false;
+    }
+
+    const firstLine = editor.document.lineAt(0).text;
+    return firstLine.startsWith('/* ************************************************************************** */');
 }
