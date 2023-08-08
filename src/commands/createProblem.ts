@@ -4,7 +4,7 @@ import fs from 'fs';
 import { showProblem } from './showProblem';
 import { headerComment } from './headerComment';
 import { searchProblem } from '../libs/searchProblem';
-import { tierAxios } from '../libs/solvedacAxios';
+import { tierAxios } from '../libs/tierAxios';
 
 export function createProblem(context: vscode.ExtensionContext)
 {

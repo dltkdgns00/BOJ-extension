@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { searchProblem } from '../libs/searchProblem';
-import { tierAxios } from '../libs/solvedacAxios';
+import { tierAxios } from '../libs/tierAxios';
 
 export async function showProblem(problemNumber: string, context: vscode.ExtensionContext)
 {
@@ -38,7 +38,6 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
           h1 { font-size: 28px; }
           h2 { font-size: 24px; }
           h3 { font-size: 20px; }
-          code { background-color: #f2f2f2; padding: 2px 4px; border-radius: 4px; }
           ${getThemeStyles()}
           .problem-section { margin-bottom: 30px; }
           .problem-text p { margin: 0; }
@@ -182,6 +181,7 @@ function getThemeStyles()
   {
     case vscode.ColorThemeKind.Light:
       return `
+        code { background-color: #f2f2f2; padding: 2px 4px; border-radius: 4px; }
         pre {
           background-color: #f2f2f2;
           color: black;
@@ -190,6 +190,7 @@ function getThemeStyles()
       `;
     case vscode.ColorThemeKind.Dark:
       return `
+        code { background-color: #2e2e2e; padding: 2px 4px; border-radius: 4px; }
         pre {
           background-color: #2e2e2e;
           color: white;

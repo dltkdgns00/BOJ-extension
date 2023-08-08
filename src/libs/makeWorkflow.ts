@@ -71,7 +71,7 @@ export async function makeWorkflow()
         const fileName = `workflow.yml`;
 
         // workflow.yml 파일 내용
-        const content = `name: Update Markdown Performance\n\non:\n\tpush:\n\tpaths:\n\t- '**.md'\n\n\njobs:\n\tupdate:\n\truns-on: ubuntu-latest\n\tsteps:\n\t- name: Checkout Repository\n\t\tuses: actions/checkout@v2\n\t\twith:\n\t\tfetch-depth: 0\n\t\ttoken: \${{ secrets.GH_TOKEN }}\n\n\t- name: Get List of Not Filled Markdown Files\n\t\tid: getfile\n\t\trun: |\n\t\techo "" > not_filled_files.txt\n\n\t\twhile IFS= read -r -d $'\0' file; do\n\t\t\tif ! grep -q "### 성능 요약" "$file"; then\n\t\t\t\techo "$file" >> not_filled_files.txt\n\t\t\tfi\n\t\tdone < <(find . -name "*.md" -print0)\n\n\t- name: Update Performance in Markdown\n\t\tuses: dltkdgns00/BOJ-action@main\n\t\twith:\n\t\tpath: not_filled_files.txt\n\t\tuser_id: ${author}\n\t\tlanguage_id: ${exNumber}\n\n\t- name: Commit and push changes\n\t\trun: |\n\t\tgit config --local user.email "github-actions[bot]@users.noreply.github.com"\n\t\tgit config --local user.name "github-actions[bot]"\n\t\tgit add .\n\t\tgit status\n\t\tif [[ -n "$(git status --porcelain)" ]]; then\n\t\t\tgit commit -m "Update performance details"\n\t\t\tgit push\n\t\telse\n\t\t\techo "No changes to commit."\n\t\tfi`;
+        const content = `name: Update Markdown Performance\n\non:\n\tpush:\n\tpaths:\n\t- '**.md'\n\n\njobs:\n\tupdate:\n\truns-on: ubuntu-latest\n\tsteps:\n\t- name: Checkout Repository\n\t\tuses: actions/checkout@v2\n\t\twith:\n\t\tfetch-depth: 0\n\t\ttoken: \${{ secrets.GH_TOKEN }}\n\n\t- name: Get List of Not Filled Markdown Files\n\t\tid: getfile\n\t\trun: |\n\t\techo "" > not_filled_files.txt\n\n\t\twhile IFS= read -r -d $'\0' file; do\n\t\t\tif ! grep -q "### 성능 요약" "$file"; then\n\t\t\t\techo "$file" >> not_filled_files.txt\n\t\t\tfi\n\t\tdone < <(find . -name "*.md" -print0)\n\n\t- name: Update Performance in Markdown\n\t\tuses: dltkdgns00/BOJ-action@main\n\t\twith:\n\t\tpath: not_filled_files.txt\n\t\tuser_id: ${author}\n\t\tlanguage_id: ${exNumber}\n\n\t- name: remove not_filled_files.txt\n\t\trun: |\n\t\trm not_filled_files.txt\n\n\t- name: Commit and push changes\n\t\trun: |\n\t\tgit config --local user.email "github-actions[bot]@users.noreply.github.com"\n\t\tgit config --local user.name "github-actions[bot]"\n\t\tgit add .\n\t\tgit status\n\t\tif [[ -n "$(git status --porcelain)" ]]; then\n\t\t\tgit commit -m "Update performance details - [Skip GitHub Action]"\n\t\t\tgit push\n\t\telse\n\t\t\techo "No changes to commit."\n\t\tfi`;
 
         const encoder = new TextEncoder();
         const data = encoder.encode(content);
@@ -83,7 +83,7 @@ export async function makeWorkflow()
     {
         if (error instanceof Error && (error as any).code === "EEXIST")
         {
-            vscode.window.showErrorMessage('workflow.yml 파일이 이미 존재하므로 생성하지 않습니다.');
+            console.log('workflow.yml 파일이 이미 존재하므로 생성하지 않습니다.');
             return;
         }
         else

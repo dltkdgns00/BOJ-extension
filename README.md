@@ -11,13 +11,7 @@
 vscode를 위한 백준 온라인 저지 문제 풀이 확장 프로그램입니다.  
 백준 온라인 저지를 할 때 편리할법한 기능을 제공합니다.
 
-## 기능
-
-- [x] 문제 검색
-- [x] 문제 번호 입력 시 헤더 자동 생성
-- [x] 문제 번호 입력 시 파일 생성
-
-## 사용법
+## 사용법 및 기능
 ![BOJ-extension](./BOJ-extension.gif)
 
 1. 확장을 설치 후 설정에서 자주 사용하는 언어의 확장자와 본인이 백준 온라인 저지에서 사용하는 아이디를 입력합니다.
@@ -29,11 +23,22 @@ vscode를 위한 백준 온라인 저지 문제 풀이 확장 프로그램입니
      - 백준 온라인 저지 문제 번호를 입력하면 해당 문제가 열립니다.
    - `BOJ: Insert Header Comment`
      - 백준 온라인 저지 문제 번호를 입력하면 해당 파일의 정보를 담은 아름다운 헤더가 생성됩니다.
+   - `BOJ: Push To Github`
+     - 현재 워크스페이스에 Github Action을 위한 `workflow.yml`파일을 생성하고 깃허브 레포지토리에 푸시합니다.
+   - `BOJ: Make workflow`
+     - Github Action을 위한 `workflow.yml`파일을 생성합니다.
+   - `BOJ: Show Manual`
+     - BOJ-extension의 매뉴얼을 엽니다.
+
+## Github Action 
+BOJ-action은 BOJ-extension을 위한 Github Action을 제공합니다.  
+BOJ-extension에서 자동으로 생성하는 workflow.yml파일을 사용하면 자신의 Github 레포지토리에 자신이 푼 문제들의 `README.md`파일에 백준 온라인 저지에 제출한 본인의 코드의 성능요약을 추가할 수 있습니다.
 
 ## 링크
 
 * [Github repository](https://github.com/dltkdgns00/BOJ-extension)
 * [Microsoft Marketplace](https://marketplace.visualstudio.com/items?itemName=dltkdgns00.BOJ-EX)
+* [Github Action for BOJ-extension](https://github.com/dltkdgns00/BOJ-action)
 
 ## 라이선스
 

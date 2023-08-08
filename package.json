@@ -1,5 +1,5 @@
 {
-  "name": "BOJ-EX",
+  "name": "boj-ex",
   "displayName": "BOJ-extension",
   "description": "백준 온라인 저지를 할때 편리할법한 기능을 제공합니다.",
   "icon": "images/icon.png",
@@ -46,6 +46,10 @@
       {
         "command": "BOJ-EX.makeWorkflow",
         "title": "BOJ: Make Workflow"
+      },
+      {
+        "command": "BOJ-EX.showManual",
+        "title": "BOJ: Show Manual"
       }
     ],
     "configuration": {

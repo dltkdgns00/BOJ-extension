@@ -2,7 +2,7 @@ import simpleGit, { SimpleGit } from 'simple-git';
 import * as vscode from 'vscode';
 import { makeWorkflow } from '../libs/makeWorkflow';
 
-export async function pushToGithub(): Promise<void>
+export async function pushToGithub()
 {
     const git: SimpleGit = simpleGit(vscode.workspace.workspaceFolders![0].uri.fsPath);
 
