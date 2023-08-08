@@ -2,6 +2,9 @@ import * as vscode from 'vscode';
 import { showProblem } from './commands/showProblem';
 import { headerComment } from './commands/headerComment';
 import { createProblem } from './commands/createProblem';
+import { pushToGithub } from './commands/pushToGithub';
+import { makeWorkflow } from './libs/makeWorkflow';
+import { showManual } from './commands/showManual';
 
 export function activate(context: vscode.ExtensionContext)
 {
@@ -11,8 +14,9 @@ export function activate(context: vscode.ExtensionContext)
 	const author = config.get<string>('author', '');
 	if (extension === undefined || author === undefined || extension === '' || author === '')
 	{
-		vscode.window.showInformationMessage('BOJ-EX를 설치해주셔서 감사합니다. 사용 전 설정을 해주세요.');
+		vscode.window.showInformationMessage('BOJ-EX를 설치해주셔서 감사합니다.');
 
+		showManual(context);
 		vscode.commands.executeCommand('workbench.action.openSettings', 'BOJ-extension');
 	}
 
@@ -68,6 +72,31 @@ export function activate(context: vscode.ExtensionContext)
 			createProblem(context);
 		})
 	);
+
+	// pushToGithub 커맨드 등록
+	context.subscriptions.push(
+		vscode.commands.registerCommand('BOJ-EX.pushToGithub', () =>
+		{
+			pushToGithub();
+		}
+		));
+
+	// makeWorkflow 커맨드 등록
+	context.subscriptions.push(
+		vscode.commands.registerCommand('BOJ-EX.makeWorkflow', () =>
+		{
+			makeWorkflow();
+		}
+		));
+
+	// showManual 커맨드 등록
+	context.subscriptions.push(
+		vscode.commands.registerCommand('BOJ-EX.showManual', () =>
+		{
+			showManual(context);
+		}
+		));
+
 }
 
 export function deactivate() { }
