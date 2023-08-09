@@ -7,7 +7,7 @@
   "author": "dltkdgns00 <dltkdgns00.dev@gmail.com>",
   "license": "MIT",
   "publisher": "dltkdgns00",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -100,6 +100,7 @@
     "mathjax": "^3.2.2",
     "simple-git": "^3.19.1",
     "string-width": "^6.1.0",
-    "wcwidth": "^1.0.1"
+    "wcwidth": "^1.0.1",
+    "yaml": "^2.3.1"
   }
 }

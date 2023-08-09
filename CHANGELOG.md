@@ -18,7 +18,7 @@
 
 ## [1.0.3] - 2023-08-03
 
-bug fix
+### Bug Fix
 
 ## [1.1.0] - 2023-08-08
 
@@ -26,3 +26,7 @@ bug fix
 - Command: Github Action을 위한 workflow.yml 생성 및 Github 푸시
 - Command: workflow.yml 생성
 - Command: 매뉴얼 열기
+
+## [1.1.1] - 2023-08-09
+
+### Bug Fix

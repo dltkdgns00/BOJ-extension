@@ -26,7 +26,8 @@ export function createProblem(context: vscode.ExtensionContext)
 
 
             // 제목 추출
-            const problemName = sp.title;
+            // replace를 사용하여 폴더명에 사용할 수 없는 문자를 바꿔준다.
+            const problemName = sp.title.replace(/:/g, '：').replace(/\*/g, '＊').replace(/\?/g, '？').replace(/"/g, '＂').replace(/</g, '＜').replace(/>/g, '＞').replace(/\|/g, '｜').replace(/\//g, '／').replace(/\\/g, '＼').replace(/\^/g, '＾');
 
             // 폴더명 생성
             const folderName = `${problemNumber}번: ${problemName}`;
