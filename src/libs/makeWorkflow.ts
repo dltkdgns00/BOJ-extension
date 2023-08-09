@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import path from 'path';
 import fs from 'fs';
+import yaml from 'yaml';
 
 export async function makeWorkflow()
 {
@@ -61,24 +62,89 @@ export async function makeWorkflow()
             vscode.workspace.workspaceFolders![0].uri.fsPath,
             folderName
         );
-        fs.mkdirSync(folderPath);
+        fs.mkdirSync(folderPath, { recursive: true });
 
         const subFolderName = "workflows";
         const subFolderPath = path.join(folderPath, subFolderName);
-        fs.mkdirSync(subFolderPath);
+        fs.mkdirSync(subFolderPath, { recursive: true });
 
-        // 파일명 생성
-        const fileName = `workflow.yml`;
+        const content = {
+            name: "Update Markdown Performance",
+            on: {
+                push: {
+                    paths: [
+                        "**.md"
+                    ]
+                }
+            },
+            jobs: {
+                update: {
+                    "runs-on": "ubuntu-latest",
+                    steps: [
+                        {
+                            name: "Checkout Repository",
+                            uses: "actions/checkout@v2",
+                            with: {
+                                "fetch-depth": 0,
+                                "token": '${{ secrets.GH_TOKEN }}'
+                            }
+                        },
+                        {
+                            name: "Get List of Not Filled Markdown Files",
+                            id: "getfile",
+                            run: [
+                                'echo "" > not_filled_files.txt',
+                                'while IFS= read -r -d $\'\\0\' file; do',
+                                '\tif ! grep -q "### 성능 요약" "$file"; then',
+                                '\t\techo "$file" >> not_filled_files.txt',
+                                '\tfi',
+                                'done < <(find . -name "*.md" -print0)'
+                            ].join('\n')
+                        },
+                        {
+                            name: "Update Performance in Markdown",
+                            uses: "dltkdgns00/BOJ-action@main",
+                            with: {
+                                path: "not_filled_files.txt",
+                                user_id: author,
+                                language_id: exNumber
+                            }
+                        },
+                        {
+                            name: "remove not_filled_files.txt",
+                            run: [
+                                'rm not_filled_files.txt'
+                            ].join('\n')
+                        },
+                        {
+                            name: "Commit and push changes",
+                            run: [
+                                'git config --local user.email "github-actions[bot]@users.noreply.github.com"',
+                                'git config --local user.name "github-actions[bot]"',
+                                'git add .',
+                                'git status',
+                                'if [[ -n "$(git status --porcelain)" ]]; then',
+                                '\tgit commit -m "Update performance details - [Skip GitHub Action]"',
+                                '\tgit push',
+                                'else',
+                                '\techo "No changes to commit."',
+                                'fi'
+                            ].join('\n')
+                        }
+                    ]
+                }
+            }
+        };
 
-        // workflow.yml 파일 내용
-        const content = `name: Update Markdown Performance\n\non:\n\tpush:\n\tpaths:\n\t- '**.md'\n\n\njobs:\n\tupdate:\n\truns-on: ubuntu-latest\n\tsteps:\n\t- name: Checkout Repository\n\t\tuses: actions/checkout@v2\n\t\twith:\n\t\tfetch-depth: 0\n\t\ttoken: \${{ secrets.GH_TOKEN }}\n\n\t- name: Get List of Not Filled Markdown Files\n\t\tid: getfile\n\t\trun: |\n\t\techo "" > not_filled_files.txt\n\n\t\twhile IFS= read -r -d $'\0' file; do\n\t\t\tif ! grep -q "### 성능 요약" "$file"; then\n\t\t\t\techo "$file" >> not_filled_files.txt\n\t\t\tfi\n\t\tdone < <(find . -name "*.md" -print0)\n\n\t- name: Update Performance in Markdown\n\t\tuses: dltkdgns00/BOJ-action@main\n\t\twith:\n\t\tpath: not_filled_files.txt\n\t\tuser_id: ${author}\n\t\tlanguage_id: ${exNumber}\n\n\t- name: remove not_filled_files.txt\n\t\trun: |\n\t\trm not_filled_files.txt\n\n\t- name: Commit and push changes\n\t\trun: |\n\t\tgit config --local user.email "github-actions[bot]@users.noreply.github.com"\n\t\tgit config --local user.name "github-actions[bot]"\n\t\tgit add .\n\t\tgit status\n\t\tif [[ -n "$(git status --porcelain)" ]]; then\n\t\t\tgit commit -m "Update performance details - [Skip GitHub Action]"\n\t\t\tgit push\n\t\telse\n\t\t\techo "No changes to commit."\n\t\tfi`;
+        console.log(content);
+        const yamlStr = yaml.stringify(content);
+        const yamlFilePath = path.join(subFolderPath, 'workflow.yml');
+        fs.writeFile(yamlFilePath, yamlStr, (err) =>
+        {
+            if (err) { throw err; }
+        });
+        console.log('YAML 파일이 성공적으로 생성되었습니다.');
 
-        const encoder = new TextEncoder();
-        const data = encoder.encode(content);
-        // 폴더 생성 후 폴더 안에 파일 생성
-        const uri = vscode.Uri.joinPath(vscode.Uri.file(subFolderPath), fileName);
-        await vscode.workspace.fs.writeFile(uri, data);
-        console.log("workflow.yml 파일이 생성되었습니다.");
     } catch (error)
     {
         if (error instanceof Error && (error as any).code === "EEXIST")
