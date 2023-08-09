@@ -16,8 +16,8 @@ export function activate(context: vscode.ExtensionContext)
 	{
 		vscode.window.showInformationMessage('BOJ-EX를 설치해주셔서 감사합니다.');
 
-		showManual(context);
 		vscode.commands.executeCommand('workbench.action.openSettings', 'BOJ-extension');
+		showManual(context);
 	}
 
 
