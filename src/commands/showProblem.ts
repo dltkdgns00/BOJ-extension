@@ -125,20 +125,22 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
           ` : '<div id="limit" class="problem-section hidden"></div>'
       }
 
-        <section id="sample-IOs" class="problem-section">
-            ${sp.sampleInputs!.map((input, index) => `
-              <div class="sample-container">
-                <div class="sample-box">
-                  <h2>예제 입력 ${index + 1}</h3>
-                  <pre class="sampledata">${input}</pre>
-                </div>
-                <div class="sample-box">
-                  <h2>예제 출력 ${index + 1}</h3>
-                  <pre class="sampledata">${sp.sampleOutputs![index]}</pre>
-                </div>
+          <section id="sample-IOs" class="problem-section">
+          ${sp.sampleInputs!.map((input, index) => `
+            <div class="sample-container">
+              <div class="sample-box">
+                <h2>예제 입력 ${index + 1}</h2>
+                <pre class="sampledata">${input}</pre>
               </div>
-            `).join('')}
+              <div class="sample-box">
+                <h2>예제 출력 ${index + 1}</h2>
+                <pre class="sampledata">${sp.sampleOutputs![index]}</pre>
+              </div>
+            </div>
+            ${sp.sampleExplains![index] === undefined ? '' : `${sp.sampleExplains![index]}`}
+          `).join('')}
         </section>
+    
 
         ${sp.hint!.trim() !== '' ? `
           <section id="hint" class="problem-section">

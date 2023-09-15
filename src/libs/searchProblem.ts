@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-export async function searchProblem(problemNumber: string, context: vscode.ExtensionContext): Promise<{ title: string, info: string | null, description: string, input: string | null, output: string | null, limit: string | null, sampleInputs: string[] | null, sampleOutputs: string[] | null, hint: string | null, source: string | null }>
+export async function searchProblem(problemNumber: string, context: vscode.ExtensionContext): Promise<{ title: string, info: string | null, description: string, input: string | null, output: string | null, limit: string | null, sampleInputs: string[] | null, sampleOutputs: string[] | null, sampleExplains: string[] | null, hint: string | null, source: string | null }>
 {
     const response = await axios.get(`https://www.acmicpc.net/problem/${problemNumber}`, {
         headers: {
@@ -44,15 +44,19 @@ export async function searchProblem(problemNumber: string, context: vscode.Exten
     // 제한 추출
     const limit = $('#problem_limit').html();
 
-    // 예제 입력, 예제 출력 추출 (배열로 처리)
+    // 예제 입력, 예제 출력, 예제 설명 추출 (배열로 처리)
     const sampleInputs: string[] = [];
     const sampleOutputs: string[] = [];
+    const sampleExplains: string[] = [];
+
 
     let i = 1;
     while (true)
     {
         const sampleInput = $(`#sample-input-${i}`).html();
         const sampleOutput = $(`#sample-output-${i}`).html();
+        const sampleExplain = $(`#sample_explain_${i}`).html();
+
 
         if (!sampleInput || !sampleOutput)
         {
@@ -61,8 +65,13 @@ export async function searchProblem(problemNumber: string, context: vscode.Exten
 
         sampleInputs.push(sampleInput);
         sampleOutputs.push(sampleOutput);
+        if (sampleExplain)
+        {
+            sampleExplains.push(sampleExplain);
+        }
         i++;
     }
+
 
     // 힌트 추출
     const hint = $('#problem_hint').html();
@@ -70,5 +79,5 @@ export async function searchProblem(problemNumber: string, context: vscode.Exten
     // 출처 추출
     const source = $('#source').html();
 
-    return { title, info, description, input, output, limit, sampleInputs, sampleOutputs, hint, source };
+    return { title, info, description, input, output, limit, sampleInputs, sampleOutputs, sampleExplains, hint, source };
 }
