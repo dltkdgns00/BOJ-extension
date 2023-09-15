@@ -154,11 +154,15 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
           ` : '<div id="hint" class="problem-section hidden"></div>'
       }
 
+        ${sp.source !== null ? `
         <section id="source" class="problem-section">
           <div id="source" class="problem-text">
             ${sp.source}
           </div>
-        </section>
+        </section>` : '<div id="source" class="problem-section hidden"></div>'
+      }
+
+
       </body>
       </html>
     `;
