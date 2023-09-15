@@ -38,8 +38,8 @@ export async function searchProblem(problemNumber: string, context: vscode.Exten
     const description = $('#problem_description').html()!.replace(/\t/g, '');
 
     // 입력, 출력, 예제 입력, 예제 출력 추출
-    const input = $('#problem_input > p').html()!.replace(/\t/g, '');
-    const output = $('#problem_output > p').html()!.replace(/\t/g, '');
+    const input = $('#problem_input').html()!.replace(/\t/g, '');
+    const output = $('#problem_output').html()!.replace(/\t/g, '');
 
     // 제한 추출
     const limit = $('#problem_limit').html();
