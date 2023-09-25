@@ -51,6 +51,7 @@ MIT License
 ### 후원하기
   
   <a href="https://www.buymeacoffee.com/dltkdgns00" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+- 후원하실 때에 메시지에 Github 아이디를 남겨주시면 후원자 리스트에 추가해드립니다.
 
 ### 후원자 리스트
 <table>
