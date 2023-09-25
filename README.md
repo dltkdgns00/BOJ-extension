@@ -47,3 +47,16 @@ MIT License
 ## 개발자
 
 * [dltkdgns00](https://github.com/dltkdgns00)
+
+### 후원하기
+  
+  <a href="https://www.buymeacoffee.com/dltkdgns00" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
+### 후원자 리스트
+<table>
+<tr>
+<th>
+<img src="https://github.com/dltkdgns00/ImageDatabase/assets/101442533/48d82da3-cf80-4f16-8a49-f8a52c8250e7" height=40px width=40px/>
+</th>
+</tr>
+</table>
