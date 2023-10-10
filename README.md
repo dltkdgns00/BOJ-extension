@@ -50,7 +50,9 @@ MIT License
 
 ### 후원하기
   
-  <a href="https://www.buymeacoffee.com/dltkdgns00" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+  <a href="https://www.buymeacoffee.com/dltkdgns00" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>  
+  [![dltkdgns00](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/dltkdgns00)
+
 - 후원하실 때에 메시지에 Github 아이디를 남겨주시면 후원자 리스트에 추가해드립니다.
 
 ### 후원자 리스트
