@@ -1,20 +1,54 @@
 import axios from "axios";
 
-async function tierAxios(problemNumber: string): Promise<{ name: string, svg: string }>
-{
-    const tierNames: string[] = ['Unrated', 'Bronze V', 'Bronze IV', 'Bronze III', 'Bronze II', 'Bronze I', 'Silver V', 'Silver IV', 'Silver III', 'Silver II', 'Silver I', 'Gold V', 'Gold IV', 'Gold III', 'Gold II', 'Gold I', 'Platinum V', 'Platinum IV', 'Platinum III', 'Platinum II', 'Platinum I', 'Diamond V', 'Diamond IV', 'Diamond III', 'Diamond II', 'Diamond I', 'Ruby V', 'Ruby IV', 'Ruby III', 'Ruby II', 'Ruby I'];
+async function tierAxios(
+	problemNumber: string
+): Promise<{ name: string; svg: string }> {
+	const tierNames: string[] = [
+		"Unrated",
+		"Bronze V",
+		"Bronze IV",
+		"Bronze III",
+		"Bronze II",
+		"Bronze I",
+		"Silver V",
+		"Silver IV",
+		"Silver III",
+		"Silver II",
+		"Silver I",
+		"Gold V",
+		"Gold IV",
+		"Gold III",
+		"Gold II",
+		"Gold I",
+		"Platinum V",
+		"Platinum IV",
+		"Platinum III",
+		"Platinum II",
+		"Platinum I",
+		"Diamond V",
+		"Diamond IV",
+		"Diamond III",
+		"Diamond II",
+		"Diamond I",
+		"Ruby V",
+		"Ruby IV",
+		"Ruby III",
+		"Ruby II",
+		"Ruby I",
+	];
 
-    const tierAxios = await axios.get(`https://solved.ac/api/v3/problem/show?problemId=${problemNumber}`, {
-        headers:
-            { 'Accept': 'application/json' }
-    });
-    console.log(tierAxios.data.level);
+	const tierAxios = await axios.get(
+		`https://solved.ac/api/v3/problem/show?problemId=${problemNumber}`,
+		{
+			headers: { Accept: "application/json" },
+		}
+	);
 
-    const level = tierAxios.data.level;
-    var name = tierNames[level];
-    const svg = `https://static.solved.ac/tier_small/${level}.svg`;
+	const level = tierAxios.data.level;
+	var name = tierNames[level];
+	const svg = `https://static.solved.ac/tier_small/${level}.svg`;
 
-    return { name, svg };
+	return { name, svg };
 }
 
 export { tierAxios };

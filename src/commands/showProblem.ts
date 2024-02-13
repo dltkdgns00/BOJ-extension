@@ -1,34 +1,36 @@
-import * as vscode from 'vscode';
-import { searchProblem } from '../libs/searchProblem';
-import { tierAxios } from '../libs/tierAxios';
+import * as vscode from "vscode";
+import { searchProblem } from "../libs/searchProblem";
+import { tierAxios } from "../libs/tierAxios";
 
-export async function showProblem(problemNumber: string, context: vscode.ExtensionContext)
-{
-  try
-  {
-    const sp = await searchProblem(problemNumber, context);
-    const tier = await tierAxios(problemNumber);
+export async function showProblem(
+	problemNumber: string,
+	context: vscode.ExtensionContext
+) {
+	try {
+		const sp = await searchProblem(problemNumber, context);
+		const tier = await tierAxios(problemNumber);
 
-    const title = `${problemNumber}번: ${sp.title}`;
+		const title = `${problemNumber}번: ${sp.title}`;
 
-    // 웹뷰 생성
-    const panel = vscode.window.createWebviewPanel(
-      'problemPreview',
-      `${title}`,
-      vscode.ViewColumn.Two,
-      {
-        enableScripts: true
-      }
-    );
+		// 웹뷰 생성
+		const panel = vscode.window.createWebviewPanel(
+			"problemPreview",
+			`${title}`,
+			vscode.ViewColumn.Two,
+			{
+				enableScripts: true,
+			}
+		);
 
-    // 웹뷰에 백준 온라인 저지 스타일과 문제 데이터 출력
-    panel.webview.html = `
+		// 웹뷰에 백준 온라인 저지 스타일과 문제 데이터 출력
+		panel.webview.html = `
       <!DOCTYPE html>
       <html lang="ko">
       <head>
         <base href="https://www.acmicpc.net"> <!-- base url 설정 -->
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
         <title>${title}</title>
         <link rel="stylesheet" href="https://ddo7jzca0m2vt.cloudfront.net/css/problem-font.css?version=20230101">
         <link rel="stylesheet" href="https://ddo7jzca0m2vt.cloudfront.net/unify/css/custom.css?version=20230101">
@@ -113,7 +115,9 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
           </div>
         </section>
 
-        ${sp.limit!.trim() !== '' ? `
+        ${
+			sp.limit!.trim() !== ""
+				? `
           <section id="limit" class="problem-section">
             <div class="headline">
               <h2>제한</h2>
@@ -122,11 +126,14 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
               ${sp.limit}
             </div>
           </section>
-          ` : '<div id="limit" class="problem-section hidden"></div>'
-      }
+          `
+				: '<div id="limit" class="problem-section hidden"></div>'
+		}
 
           <section id="sample-IOs" class="problem-section">
-          ${sp.sampleInputs!.map((input, index) => `
+          ${sp
+				.sampleInputs!.map(
+					(input, index) => `
             <div class="sample-container">
               <div class="sample-box">
                 <h2>예제 입력 ${index + 1}</h2>
@@ -137,12 +144,20 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
                 <pre class="sampledata">${sp.sampleOutputs![index]}</pre>
               </div>
             </div>
-            ${sp.sampleExplains![index] === undefined ? '' : `${sp.sampleExplains![index]}`}
-          `).join('')}
+            ${
+				sp.sampleExplains![index] === undefined
+					? ""
+					: `${sp.sampleExplains![index]}`
+			}
+          `
+				)
+				.join("")}
         </section>
     
 
-        ${sp.hint!.trim() !== '' ? `
+        ${
+			sp.hint!.trim() !== ""
+				? `
           <section id="hint" class="problem-section">
             <div class="headline">
               <h2>힌트</h2>
@@ -151,42 +166,42 @@ export async function showProblem(problemNumber: string, context: vscode.Extensi
               ${sp.hint}
             </div>
           </section>
-          ` : '<div id="hint" class="problem-section hidden"></div>'
-      }
+          `
+				: '<div id="hint" class="problem-section hidden"></div>'
+		}
 
-        ${sp.source !== null ? `
+        ${
+			sp.source !== null
+				? `
         <section id="source" class="problem-section">
           <div id="source" class="problem-text">
             ${sp.source}
           </div>
-        </section>` : '<div id="source" class="problem-section hidden"></div>'
-      }
-
+        </section>`
+				: '<div id="source" class="problem-section hidden"></div>'
+		}
 
       </body>
       </html>
     `;
-  } catch (error)
-  {
-    vscode.window.showErrorMessage('Failed to fetch the problem: ' + error);
-  }
+		console.log(panel.webview.cspSource);
+	} catch (error) {
+		vscode.window.showErrorMessage("Failed to fetch the problem: " + error);
+	}
 }
 
 // 웹뷰에 전달할 테마 정보를 포함한 메시지를 생성하는 함수
-function createThemeMessage()
-{
-  const currentTheme = vscode.window.activeColorTheme.kind;
-  return { theme: currentTheme };
+function createThemeMessage() {
+	const currentTheme = vscode.window.activeColorTheme.kind;
+	return { theme: currentTheme };
 }
 
-function getThemeStyles()
-{
-  // 현재 테마를 가져와서 해당 테마에 따른 스타일을 반환하는 함수
-  const currentTheme = vscode.window.activeColorTheme.kind;
-  switch (currentTheme)
-  {
-    case vscode.ColorThemeKind.Light:
-      return `
+function getThemeStyles() {
+	// 현재 테마를 가져와서 해당 테마에 따른 스타일을 반환하는 함수
+	const currentTheme = vscode.window.activeColorTheme.kind;
+	switch (currentTheme) {
+		case vscode.ColorThemeKind.Light:
+			return `
         code { background-color: #f2f2f2; padding: 2px 4px; border-radius: 4px; }
         pre {
           background-color: #f2f2f2;
@@ -194,8 +209,8 @@ function getThemeStyles()
           font-size: 14px;
         }
       `;
-    case vscode.ColorThemeKind.Dark:
-      return `
+		case vscode.ColorThemeKind.Dark:
+			return `
         code { background-color: #2e2e2e; padding: 2px 4px; border-radius: 4px; }
         pre {
           background-color: #2e2e2e;
@@ -203,7 +218,7 @@ function getThemeStyles()
           font-size: 14px;
         }
       `;
-    default:
-      return '';
-  }
+		default:
+			return "";
+	}
 }

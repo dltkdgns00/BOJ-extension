@@ -1,21 +1,20 @@
-import path from 'path';
-import * as vscode from 'vscode';
+import path from "path";
+import * as vscode from "vscode";
 
-export function showManual(context: vscode.ExtensionContext)
-{
+export function showManual(context: vscode.ExtensionContext) {
+	// 웹뷰 생성
+	const panel = vscode.window.createWebviewPanel(
+		"preview",
+		`BOJ-extension 사용법`,
+		vscode.ViewColumn.Two
+	);
 
-  // 웹뷰 생성
-  const panel = vscode.window.createWebviewPanel(
-    'preview',
-    `BOJ-extension 사용법`,
-    vscode.ViewColumn.Two
-  );
+	// 이미지 폴더 경로를 가져오기
+	const extensionUri =
+		vscode.extensions.getExtension("dltkdgns00.boj-ex")!.extensionUri;
+	const imagesFolderPath = vscode.Uri.joinPath(extensionUri, "images");
 
-  // 이미지 폴더 경로를 가져오기
-  const extensionUri = vscode.extensions.getExtension('dltkdgns00.boj-ex')!.extensionUri;
-  const imagesFolderPath = vscode.Uri.joinPath(extensionUri, 'images');
-
-  panel.webview.html = `
+	panel.webview.html = `
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -36,16 +35,24 @@ ${getThemeStyles()}
 <h2 id="-">확장 사용전 준비</h2>
 <ol>
 <li>vscode의 확장 설정에 BOJ에서 자신이 사용하는 아이디를 입력하고, BOJ에서 자신이 주로 사용하는 언어의 &quot;확장자&quot;(ex: c++ -&gt; cpp, python -&gt; py)를 입력합니다.
-<img src="${panel.webview.asWebviewUri(vscode.Uri.joinPath(imagesFolderPath, 'EX_settings.png'))}"></li>
+<img src="${panel.webview.asWebviewUri(
+		vscode.Uri.joinPath(imagesFolderPath, "EX_settings.png")
+	)}"></li>
 <li>자신이 푼 문제들을 정리중인 깃허브 레포지토리의 Settings에 들어가서 Secrets and variables설정을 해줍니다. Github Action을 사용하기 위함입니다.
-<img src="${panel.webview.asWebviewUri(vscode.Uri.joinPath(imagesFolderPath, 'GH_Secrets.png'))}">
-<img src="${panel.webview.asWebviewUri(vscode.Uri.joinPath(imagesFolderPath, 'GH_TOKEN.png'))}">
+<img src="${panel.webview.asWebviewUri(
+		vscode.Uri.joinPath(imagesFolderPath, "GH_Secrets.png")
+	)}">
+<img src="${panel.webview.asWebviewUri(
+		vscode.Uri.joinPath(imagesFolderPath, "GH_TOKEN.png")
+	)}">
   ※ <code>GH_TOKEN</code>은 깃허브에서 발급받은 토큰을 입력합니다. 토큰 발급 방법은 <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">여기</a>를 참고해주세요.<br> ※ <code>BOJ: Push To Github</code> 커맨드를 사용하면 자동으로 Github Action을 위한 workflow.yml파일이 생성되고, Github 레포지토리에 푸시됩니다.</li>
 </ol>
 <h2 id="github-action">Github Action</h2>
 <p><a href="https://github.com/dltkdgns00/BOJ-action">Github Action for BOJ-extension</a> made by dltkdgns00<br>이 Github 레포지토리는 BOJ-extension을 위한 Github Action을 제공합니다.<br>BOJ-extension에서 자동으로 생성하는 workflow.yml파일을 사용하면 자신의 Github 레포지토리에 자신이 푼 문제들의 <code>README.md</code>파일에 백준 온라인 저지에 제출한 본인의 코드의 성능요약을 추가할 수 있습니다.</p>
 <h2 id="-">사용법</h2>
-<p><img src="${panel.webview.asWebviewUri(vscode.Uri.joinPath(imagesFolderPath, '../BOJ-extension.gif'))}"></p>
+<p><img src="${panel.webview.asWebviewUri(
+		vscode.Uri.joinPath(imagesFolderPath, "../BOJ-extension.gif")
+	)}"></p>
 <ol>
 <li><code>Ctrl + Shift + P</code> or <code>Cmd + Shift + P</code> 를 눌러 명령어 창을 엽니다.</li>
 <li>커맨드를 입력합니다.<ul>
@@ -81,14 +88,12 @@ ${getThemeStyles()}
 `;
 }
 
-function getThemeStyles()
-{
-  // 현재 테마를 가져와서 해당 테마에 따른 스타일을 반환하는 함수
-  const currentTheme = vscode.window.activeColorTheme.kind;
-  switch (currentTheme)
-  {
-    case vscode.ColorThemeKind.Light:
-      return `
+function getThemeStyles() {
+	// 현재 테마를 가져와서 해당 테마에 따른 스타일을 반환하는 함수
+	const currentTheme = vscode.window.activeColorTheme.kind;
+	switch (currentTheme) {
+		case vscode.ColorThemeKind.Light:
+			return `
         code { background-color: #f2f2f2; padding: 2px 4px; border-radius: 4px; }
         pre {
           background-color: #f2f2f2;
@@ -96,8 +101,8 @@ function getThemeStyles()
           font-size: 14px;
         }
       `;
-    case vscode.ColorThemeKind.Dark:
-      return `
+		case vscode.ColorThemeKind.Dark:
+			return `
         code { background-color: #2e2e2e; padding: 2px 4px; border-radius: 4px; }
         pre {
           background-color: #2e2e2e;
@@ -105,7 +110,7 @@ function getThemeStyles()
           font-size: 14px;
         }
       `;
-    default:
-      return '';
-  }
+		default:
+			return "";
+	}
 }
