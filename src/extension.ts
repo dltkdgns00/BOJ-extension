@@ -5,6 +5,8 @@ import { createProblem } from "./commands/createProblem";
 import { pushToGithub } from "./commands/pushToGithub";
 import { makeWorkflow } from "./libs/makeWorkflow";
 import { showManual } from "./commands/showManual";
+import { runTestCase } from "./commands/runTestCase";
+import { getProbNum } from "./libs/getProbNum";
 
 export function activate(context: vscode.ExtensionContext) {
 	// 확장프로그램이 처음 실행될 때, 설정이 되어있지 않으면 설정창을 띄워준다.
@@ -76,6 +78,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand("BOJ-EX.createProblem", () => {
 			createProblem(context);
+		})
+	);
+
+	// runTestCase 커맨드 등록
+	context.subscriptions.push(
+		vscode.commands.registerCommand("BOJ-EX.runTestCase", () => {
+			runTestCase(context);
 		})
 	);
 

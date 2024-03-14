@@ -40,6 +40,10 @@
 				"title": "BOJ: Create Problem File"
 			},
 			{
+				"command": "BOJ-EX.runTestCase",
+				"title": "BOJ: Run TestCase"
+			},
+			{
 				"command": "BOJ-EX.pushToGithub",
 				"title": "BOJ: Push to Github"
 			},

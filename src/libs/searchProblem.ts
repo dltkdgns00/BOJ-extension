@@ -2,10 +2,7 @@ import * as vscode from "vscode";
 import axios from "axios";
 import * as cheerio from "cheerio";
 
-export async function searchProblem(
-	problemNumber: string,
-	context: vscode.ExtensionContext
-): Promise<{
+interface ProblemData {
 	title: string;
 	info: string | null;
 	description: string;
@@ -17,7 +14,18 @@ export async function searchProblem(
 	sampleExplains: string[] | null;
 	hint: string | null;
 	source: string | null;
-}> {
+}
+
+export async function searchProblem(
+	problemNumber: string,
+	context: vscode.ExtensionContext
+): Promise<ProblemData> {
+	const cacheKey = `problem-${problemNumber}`;
+	const cachedData = context.globalState.get<ProblemData>(cacheKey);
+	if (cachedData) {
+		return cachedData;
+	}
+
 	const response = await axios.get(
 		`https://www.acmicpc.net/problem/${problemNumber}`,
 		{
@@ -89,7 +97,7 @@ export async function searchProblem(
 	// 출처 추출
 	const source = $("#source").html();
 
-	return {
+	const problemData: ProblemData = {
 		title,
 		info,
 		description,
@@ -102,4 +110,8 @@ export async function searchProblem(
 		hint,
 		source,
 	};
+
+	await context.globalState.update(cacheKey, problemData);
+
+	return problemData;
 }
