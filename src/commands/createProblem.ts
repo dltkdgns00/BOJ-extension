@@ -6,21 +6,25 @@ import { headerComment } from "./headerComment";
 import { searchProblem } from "../libs/searchProblem";
 import { tierAxios } from "../libs/tierAxios";
 
-export function createProblem(context: vscode.ExtensionContext) {
+export function createProblem(context: vscode.ExtensionContext)
+{
 	vscode.window
 		.showInputBox({
 			prompt: "문제 번호를 입력해주세요.",
 			placeHolder: "예: 1000",
 		})
-		.then(async (problemNumber) => {
-			if (!problemNumber) {
+		.then(async (problemNumber) =>
+		{
+			if (!problemNumber)
+			{
 				vscode.window.showErrorMessage(
 					"문제 번호가 입력되지 않았습니다."
 				);
 				return;
 			}
 
-			try {
+			try
+			{
 				const config = vscode.workspace.getConfiguration("BOJ");
 				const extension = config.get<string>("extension", "");
 
@@ -42,7 +46,7 @@ export function createProblem(context: vscode.ExtensionContext) {
 					.replace(/\^/g, "＾");
 
 				// 폴더명 생성
-				const folderName = `${problemNumber}번: ${problemName}`;
+				const folderName = `${problemNumber}번： ${problemName}`;
 				const folderPath = path.join(
 					vscode.workspace.workspaceFolders![0].uri.fsPath,
 					folderName
@@ -50,7 +54,15 @@ export function createProblem(context: vscode.ExtensionContext) {
 				fs.mkdirSync(folderPath);
 
 				// 파일명 생성
-				const fileName = `${problemName}.${extension}`;
+				let fileName = "";
+				if (extension === "java")
+				{
+					fileName = `Main.java`;
+				}
+				else
+				{
+					fileName = `${problemName}.${extension}`;
+				}
 				// md 파일명 생성
 				const readme = `README.md`;
 
@@ -67,18 +79,14 @@ export function createProblem(context: vscode.ExtensionContext) {
 				);
 
 				// README.md 파일 내용
-				const readmeContent = `# ${problemNumber}번: ${problemName} - <img src="${
-					tier.svg
-				}" style="height:20px" /> ${
-					tier.name
-				}\n\n<!-- performance -->\n\n<!-- 문제 제출 후 깃허브에 푸시를 했을 때 제출한 코드의 성능이 입력될 공간입니다.-->\n\n<!-- end -->\n\n## 문제\n\n[문제 링크](https://boj.kr/${problemNumber})\n\n${
-					sp.description
-				}\n\n## 입력\n\n${sp.input}\n\n## 출력\n\n${
-					sp.output
-				}\n\n## 소스코드\n\n[소스코드 보기](${fileName.replace(
-					/ /g,
-					"%20"
-				)})`;
+				const readmeContent = `# ${problemNumber}번: ${problemName} - <img src="${tier.svg
+					}" style="height:20px" /> ${tier.name
+					}\n\n<!-- performance -->\n\n<!-- 문제 제출 후 깃허브에 푸시를 했을 때 제출한 코드의 성능이 입력될 공간입니다.-->\n\n<!-- end -->\n\n## 문제\n\n[문제 링크](https://boj.kr/${problemNumber})\n\n${sp.description
+					}\n\n## 입력\n\n${sp.input}\n\n## 출력\n\n${sp.output
+					}\n\n## 소스코드\n\n[소스코드 보기](${fileName.replace(
+						/ /g,
+						"%20"
+					)})`;
 				const encoder = new TextEncoder();
 				const readmeData = encoder.encode(readmeContent);
 
@@ -99,18 +107,21 @@ export function createProblem(context: vscode.ExtensionContext) {
 
 				showProblem(problemNumber, context);
 				headerComment(problemNumber);
-			} catch (error) {
+			} catch (error)
+			{
 				if (
 					error instanceof Error &&
 					(error as any).code === "EEXIST"
-				) {
+				)
+				{
 					vscode.window.showErrorMessage(
 						"이미 해당 문제의 폴더가 존재합니다."
 					);
 				} else if (
 					error instanceof Error &&
 					(error as any).code === "ERR_BAD_REQUEST"
-				) {
+				)
+				{
 					vscode.window.showErrorMessage("문제를 찾을 수 없습니다.");
 				}
 				console.log(error);
