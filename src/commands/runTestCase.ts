@@ -106,7 +106,7 @@ export async function runTestCase(context: vscode.ExtensionContext) {
 			await runTest(sp.sampleInputs[i], sp.sampleOutputs[i], i);
 		}
 
-		const postMessage1 = centerText(` 채점 종료 `, maxWidth);
+		const postMessage1 = centerText(` 채점 종료 `, maxWidth - 2);
 		const postMessage2 = `결과 창은 1분 뒤에 닫힙니다.`;
 
 		outputChannel.appendLine(``);

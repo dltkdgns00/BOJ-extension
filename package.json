@@ -7,7 +7,7 @@
 	"author": "dltkdgns00 <dltkdgns00.dev@gmail.com>",
 	"license": "MIT",
 	"publisher": "dltkdgns00",
-	"version": "1.1.5",
+	"version": "1.2.0",
 	"engines": {
 		"vscode": "^1.80.0"
 	},
@@ -41,7 +41,7 @@
 			},
 			{
 				"command": "BOJ-EX.runTestCase",
-				"title": "BOJ: Run TestCase"
+				"title": "BOJ: Run Test Case"
 			},
 			{
 				"command": "BOJ-EX.pushToGithub",
