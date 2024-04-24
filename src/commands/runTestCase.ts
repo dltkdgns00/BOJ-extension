@@ -3,10 +3,8 @@ import { searchProblem } from "../libs/searchProblem";
 import { getProbNum } from "../libs/getProbNum";
 import { spawn, execSync } from "child_process";
 import * as path from "path";
-import * as fs from "fs";
-
+import { outputChannel } from "../libs/getTestOutputChan";
 export async function runTestCase(context: vscode.ExtensionContext) {
-	const outputChannel = vscode.window.createOutputChannel("Test Cases");
 	try {
 		const problemNumber = getProbNum();
 
@@ -53,13 +51,12 @@ export async function runTestCase(context: vscode.ExtensionContext) {
 			expected,
 			actual
 		) => {
-			const passedMessage = `✅ Test Case #${testCaseIndex + 1}: Passed`;
-			const failedMessage = `❌ Test Case #${
-				testCaseIndex + 1
-			}: Failed\n${centerText(
-				` Expected `,
-				maxWidth
-			)}\n${expected}${centerText(` Actual `, maxWidth)}\n${actual}`;
+			const passedMessage = `✅ Test Case #${testCaseIndex + 1}:\n${centerText("Expected==Actual:", maxWidth)}\n${actual}`;
+			const failedMessage = `❌ Test Case #${testCaseIndex + 1
+				}: Failed\n${centerText(
+					` Expected `,
+					maxWidth
+				)}\n${expected}${centerText(` Actual `, maxWidth)}\n${actual}`;
 
 			return result ? passedMessage : failedMessage;
 		};
@@ -75,7 +72,7 @@ export async function runTestCase(context: vscode.ExtensionContext) {
 
 				processIO!.stderr.on("data", (data) => {
 					console.error(`에러: ${data}`);
-					reject(new Error(data.toString()));
+					outputData += data.toString();
 				});
 
 				processIO!.on("close", (code) => {
@@ -94,29 +91,23 @@ export async function runTestCase(context: vscode.ExtensionContext) {
 
 				processIO!.on("error", (err) => {
 					console.error(`에러: ${err}`);
-					reject(err);
+					outputData += err.toString();
 				});
 
 				processIO!.stdin.write(input);
 				processIO!.stdin.end();
 			});
 		};
+		outputChannel.clear()
 
 		for (let i = 0; i < sp.sampleInputs.length; i++) {
 			await runTest(sp.sampleInputs[i], sp.sampleOutputs[i], i);
 		}
 
 		const postMessage1 = centerText(` 채점 종료 `, maxWidth - 2);
-		const postMessage2 = `결과 창은 1분 뒤에 닫힙니다.`;
-
 		outputChannel.appendLine(``);
 		outputChannel.appendLine(postMessage1);
-		outputChannel.appendLine(postMessage2);
-
 		outputChannel.show(true);
-		setTimeout(() => {
-			outputChannel.dispose();
-		}, 60000);
 	} catch (error) {
 		vscode.window.showErrorMessage(
 			"테스트 케이스 실행 중 오류가 발생했습니다. 직접 실행해서 오류를 확인해주세요."
