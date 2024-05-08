@@ -71,3 +71,12 @@
 ### Bug Fixed
 
 -   윈도우에서 폴더 생성시 폴더 이름에 특수문자가 포함되어 있을 경우 폴더가 생성되지 않는 버그 수정
+
+## [1.2.1] - 2024-05-08
+
+### Pull Request
+
+-  [PR #6](https://github.com/dltkdgns00/BOJ-extension/pull/6) - Errors from running test cases now show on output  
+    이제 오류가 발생했을 때 출력에 표시됩니다.  
+    이제 1분 뒤 출력 창이 자동으로 닫히지 않습니다.  
+    Thanks to [byvre](https://github.com/byvre) for the contribution.

@@ -7,7 +7,7 @@
 	"author": "dltkdgns00 <dltkdgns00.dev@gmail.com>",
 	"license": "MIT",
 	"publisher": "dltkdgns00",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"engines": {
 		"vscode": "^1.80.0"
 	},

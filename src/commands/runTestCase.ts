@@ -3,8 +3,8 @@ import { searchProblem } from "../libs/searchProblem";
 import { getProbNum } from "../libs/getProbNum";
 import { spawn, execSync } from "child_process";
 import * as path from "path";
-import { outputChannel } from "../libs/getTestOutputChan";
 export async function runTestCase(context: vscode.ExtensionContext) {
+	const outputChannel = vscode.window.createOutputChannel("Test Cases");
 	try {
 		const problemNumber = getProbNum();
 
@@ -51,7 +51,9 @@ export async function runTestCase(context: vscode.ExtensionContext) {
 			expected,
 			actual
 		) => {
-			const passedMessage = `✅ Test Case #${testCaseIndex + 1}:\n${centerText("Expected==Actual:", maxWidth)}\n${actual}`;
+			const passedMessage = `✅ Test Case #${testCaseIndex + 1}: Passed\n${centerText(
+				` Output `,
+				maxWidth)}\n${actual}`;
 			const failedMessage = `❌ Test Case #${testCaseIndex + 1
 				}: Failed\n${centerText(
 					` Expected `,
@@ -98,7 +100,6 @@ export async function runTestCase(context: vscode.ExtensionContext) {
 				processIO!.stdin.end();
 			});
 		};
-		outputChannel.clear()
 
 		for (let i = 0; i < sp.sampleInputs.length; i++) {
 			await runTest(sp.sampleInputs[i], sp.sampleOutputs[i], i);
