@@ -44,9 +44,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
 				case "showManual":
 					vscode.commands.executeCommand("BOJ-EX.showManual");
 					break;
-				case "showSubmissions":
-					vscode.commands.executeCommand("BOJ-EX.showSubmissions");
-					break;
 			}
 		});
 	}
@@ -166,13 +163,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
         </div>
         
         <div class="card">
-          <button id="showSubmissions">
-            <span class="icon">📊</span>
-            제출 현황 보기
-          </button>
-        </div>
-        
-        <div class="card">
           <button id="showManual">
             <span class="icon">📚</span>
             매뉴얼 보기
@@ -206,10 +196,6 @@ export class SidebarProvider implements vscode.WebviewViewProvider {
           
           document.getElementById('showManual').addEventListener('click', () => {
             vscode.postMessage({ type: 'showManual' });
-          });
-          
-          document.getElementById('showSubmissions').addEventListener('click', () => {
-            vscode.postMessage({ type: 'showSubmissions' });
           });
         }())
       </script>
@@ -362,7 +348,9 @@ export class SubmissionProvider implements vscode.WebviewViewProvider {
 		return `
 		<div class="content-wrapper">
 			<div class="info-message">
-				열린 파일이 없습니다. 파일을 열어주세요.
+				열린 파일이 없습니다.
+        <br/>
+        파일을 열어주세요.
 			</div>
 		</div>`;
 	}

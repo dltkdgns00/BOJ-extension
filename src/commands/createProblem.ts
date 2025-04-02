@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { searchProblem } from "../libs/searchProblem";
 import { headerComment } from "./headerComment";
+import { showProblem } from "./showProblem";
 
 export async function createProblem(
 	context: vscode.ExtensionContext,
@@ -89,6 +90,9 @@ export async function createProblem(
 
 		// 전역 상태에 현재 문제 번호 저장
 		context.globalState.update("currentProblemNumber", problemNumber);
+
+		// 문제 내용 표시
+		await showProblem(problemNumber, context);
 	} catch (error) {
 		vscode.window.showErrorMessage(
 			`문제 생성 중 오류가 발생했습니다: ${error}. 네트워크 연결을 확인하고 다시 시도해주세요.`
