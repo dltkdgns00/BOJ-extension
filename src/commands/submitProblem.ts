@@ -36,10 +36,20 @@ export function submitProblem(problemNumber?: string, code?: string) {
 	// 코드가 전달되지 않은 경우 소스 파일을 찾아 코드 가져오기
 	if (!code) {
 		getSourceCodeByProblemNumber(problemNumber).then((foundCode) => {
-			openSubmitPage(problemNumber, foundCode);
+			// problemNumber가 정의되었는지 확인
+			if (problemNumber) {
+				openSubmitPage(problemNumber, foundCode);
+			} else {
+				vscode.window.showErrorMessage("문제 번호를 찾을 수 없습니다.");
+			}
 		});
 	} else {
-		openSubmitPage(problemNumber, code);
+		// problemNumber가 정의되었는지 확인
+		if (problemNumber) {
+			openSubmitPage(problemNumber, code);
+		} else {
+			vscode.window.showErrorMessage("문제 번호를 찾을 수 없습니다.");
+		}
 	}
 }
 
