@@ -23,7 +23,42 @@ export async function showProblem(
 		);
 
 		// 웹뷰에 백준 온라인 저지 스타일과 문제 데이터 출력
-		panel.webview.html = `
+		panel.webview.html = generateHtml(sp, tier, context, panel, problemNumber);
+
+		// 웹뷰 생성 후 메시지 수신 처리 추가
+		panel.webview.onDidReceiveMessage(
+			async (message) => {
+				switch (message.command) {
+					case "runTestCase":
+						// 문제 번호를 전역 상태로 저장
+						context.globalState.update("currentProblemNumber", problemNumber);
+						vscode.commands.executeCommand("BOJ-EX.runTestCase", problemNumber);
+						break;
+					case "submitProblem":
+						vscode.commands.executeCommand(
+							"BOJ-EX.submitProblem",
+							message.problemNumber
+						);
+						break;
+				}
+			},
+			undefined,
+			context.subscriptions
+		);
+	} catch (error) {
+		vscode.window.showErrorMessage("Failed to fetch the problem: " + error);
+	}
+}
+
+// HTML 생성 함수에서 예제 입력과 예제 출력 부분을 찾아 테스트 버튼 추가
+function generateHtml(
+	problemData: any,
+	tier: any,
+	context: vscode.ExtensionContext,
+	panel: vscode.WebviewPanel,
+	problemNumber: string
+): string {
+	let htmlContent = `
       <!DOCTYPE html>
       <html lang="ko">
       <head>
@@ -31,7 +66,7 @@ export async function showProblem(
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
-        <title>${title}</title>
+        <title>${problemNumber}번: ${problemData.title}</title>
         <link rel="stylesheet" href="https://ddo7jzca0m2vt.cloudfront.net/css/problem-font.css?version=20230101">
         <link rel="stylesheet" href="https://ddo7jzca0m2vt.cloudfront.net/unify/css/custom.css?version=20230101">
         <style>
@@ -56,6 +91,22 @@ export async function showProblem(
           .hidden {
             display: none;
           }
+          .button-container {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+          }
+          .submit-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+          }
+          .submit-button:hover {
+            background-color: #45a049;
+          }
         </style>
         <script>
           function updateTheme() {
@@ -77,7 +128,7 @@ export async function showProblem(
       </head>
       <body>
         <h1 style="display:inline">
-          ${title}
+          ${problemNumber}번: ${problemData.title}
         </h1>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <h3 style="display:inline">
@@ -86,14 +137,14 @@ export async function showProblem(
         </h3>
         <br>
         <table>
-          ${sp.info}
+          ${problemData.info}
         </table>
         <section id="description" class="problem-section">
           <div class="headline">
             <h2>문제</h2>
           </div>
           <div id="problem_description" class="problem-text">
-            ${sp.description}
+            ${problemData.description}
           </div>
         </section>
 
@@ -102,7 +153,7 @@ export async function showProblem(
             <h2>입력</h2>
           </div>
           <div id="problem_input" class="problem-text">
-            ${sp.input}
+            ${problemData.input}
           </div>
         </section>
 
@@ -111,29 +162,33 @@ export async function showProblem(
             <h2>출력</h2>
           </div>
           <div id="problem_output" class="problem-text">
-            ${sp.output}
+            ${problemData.output}
           </div>
         </section>
 
         ${
-			sp.limit!.trim() !== ""
-				? `
+					problemData.limit!.trim() !== ""
+						? `
           <section id="limit" class="problem-section">
             <div class="headline">
               <h2>제한</h2>
             </div>
             <div id="problem_limit" class="problem-text">
-              ${sp.limit}
+              ${problemData.limit}
             </div>
           </section>
           `
-				: '<div id="limit" class="problem-section hidden"></div>'
-		}
+						: '<div id="limit" class="problem-section hidden"></div>'
+				}
 
           <section id="sample-IOs" class="problem-section">
-          ${sp
-				.sampleInputs!.map(
-					(input, index) => `
+          ${problemData
+						.sampleInputs!.map(
+							(input, index) => `
+            <div class="test-case-button-container">
+              <button id="run-test-case" class="run-test-button">테스트 케이스 실행</button>
+              <button id="submit-problem" class="submit-button">제출 페이지로 이동</button>
+            </div>
             <div class="sample-container">
               <div class="sample-box">
                 <h2>예제 입력 ${index + 1}</h2>
@@ -141,53 +196,148 @@ export async function showProblem(
               </div>
               <div class="sample-box">
                 <h2>예제 출력 ${index + 1}</h2>
-                <pre class="sampledata">${sp.sampleOutputs![index]}</pre>
+                <pre class="sampledata">${
+									problemData.sampleOutputs![index]
+								}</pre>
               </div>
             </div>
             ${
-				sp.sampleExplains![index] === undefined
-					? ""
-					: `${sp.sampleExplains![index]}`
-			}
+							problemData.sampleExplains![index] === undefined
+								? ""
+								: `${problemData.sampleExplains![index]}`
+						}
           `
-				)
-				.join("")}
+						)
+						.join("")}
         </section>
     
 
         ${
-			sp.hint!.trim() !== ""
-				? `
+					problemData.hint!.trim() !== ""
+						? `
           <section id="hint" class="problem-section">
             <div class="headline">
               <h2>힌트</h2>
             </div>
             <div id="problem_hint" class="problem-text">
-              ${sp.hint}
+              ${problemData.hint}
             </div>
           </section>
           `
-				: '<div id="hint" class="problem-section hidden"></div>'
-		}
+						: '<div id="hint" class="problem-section hidden"></div>'
+				}
 
         ${
-			sp.source !== null
-				? `
+					problemData.source !== null
+						? `
         <section id="source" class="problem-section">
           <div id="source" class="problem-text">
-            ${sp.source}
+            ${problemData.source}
           </div>
         </section>`
-				: '<div id="source" class="problem-section hidden"></div>'
-		}
+						: '<div id="source" class="problem-section hidden"></div>'
+				}
 
       </body>
       </html>
     `;
-		console.log(panel.webview.cspSource);
-	} catch (error) {
-		vscode.window.showErrorMessage("Failed to fetch the problem: " + error);
-	}
+
+	// 스타일 추가
+	const additionalStyle = `
+    <style>
+      .test-case-button-container {
+        margin: 15px 0;
+        text-align: right;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+      .run-test-button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .run-test-button:hover {
+        background-color: #218838;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+      .run-test-button:active {
+        transform: translateY(1px);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .run-test-button::before {
+        content: "▶";
+        font-size: 12px;
+        color: white;
+      }
+      .submit-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .submit-button:hover {
+        background-color: #0069d9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+      .submit-button:active {
+        transform: translateY(1px);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .submit-button::before {
+        content: "↗";
+        font-size: 12px;
+        color: white;
+      }
+    </style>
+  `;
+
+	htmlContent = htmlContent.replace("</head>", `${additionalStyle}</head>`);
+
+	// 버튼 클릭 이벤트 스크립트 추가
+	const script = `
+    <script>
+      const vscode = acquireVsCodeApi();
+      document.querySelectorAll('.run-test-button').forEach(button => {
+        button.addEventListener('click', () => {
+          vscode.postMessage({ 
+            command: 'runTestCase'
+          });
+        });
+      });
+      document.querySelectorAll('.submit-button').forEach(button => {
+        button.addEventListener('click', () => {
+          vscode.postMessage({
+            command: 'submitProblem',
+            problemNumber: '${problemNumber}'
+          });
+        });
+      });
+    </script>
+  `;
+
+	htmlContent = htmlContent.replace("</body>", `${script}</body>`);
+
+	return htmlContent;
 }
 
 // 웹뷰에 전달할 테마 정보를 포함한 메시지를 생성하는 함수

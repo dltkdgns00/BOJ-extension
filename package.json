@@ -54,6 +54,10 @@
 			{
 				"command": "BOJ-EX.showManual",
 				"title": "BOJ: Show Manual"
+			},
+			{
+				"command": "BOJ-EX.submitProblem",
+				"title": "BOJ-EX: 백준 문제 제출 페이지 열기"
 			}
 		],
 		"configuration": {
@@ -71,6 +75,25 @@
 					"description": "선호하는 언어의 확장자명을 적어주세요 (ex: cpp, py, java, etc...)"
 				}
 			}
+		},
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "boj-explorer",
+					"title": "BOJ-EX",
+					"icon": "resources/icon.svg"
+				}
+			]
+		},
+		"views": {
+			"boj-explorer": [
+				{
+					"id": "boj-sidebar",
+					"name": "BOJ Extension",
+					"icon": "resources/icon.svg",
+					"type": "webview"
+				}
+			]
 		}
 	},
 	"scripts": {

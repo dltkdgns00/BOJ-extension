@@ -7,6 +7,8 @@ import { makeWorkflow } from "./libs/makeWorkflow";
 import { showManual } from "./commands/showManual";
 import { runTestCase } from "./commands/runTestCase";
 import { getProbNum } from "./libs/getProbNum";
+import { SidebarProvider } from "./sidebar";
+import { submitProblem } from "./commands/submitProblem";
 
 export function activate(context: vscode.ExtensionContext) {
 	// 확장프로그램이 처음 실행될 때, 설정이 되어있지 않으면 설정창을 띄워준다.
@@ -19,9 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 		extension === "" ||
 		author === ""
 	) {
-		vscode.window.showInformationMessage(
-			"BOJ-EX를 설치해주셔서 감사합니다."
-		);
+		vscode.window.showInformationMessage("BOJ-EX를 설치해주셔서 감사합니다.");
 
 		vscode.commands.executeCommand(
 			"workbench.action.openSettings",
@@ -29,6 +29,12 @@ export function activate(context: vscode.ExtensionContext) {
 		);
 		showManual(context);
 	}
+
+	// 사이드바 Provider 등록
+	const sidebarProvider = new SidebarProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider("boj-sidebar", sidebarProvider)
+	);
 
 	// showProblem 커맨드 등록
 	context.subscriptions.push(
@@ -44,9 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
 						// showProblem 함수 호출 시 context 전달
 						showProblem(problemNumber, context);
 					} else {
-						vscode.window.showInformationMessage(
-							"문제 번호를 입력해주세요."
-						);
+						vscode.window.showInformationMessage("문제 번호를 입력해주세요.");
 					}
 				});
 		})
@@ -66,9 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
 						// showProblem 함수 호출 시 context 전달
 						headerComment(problemNumber);
 					} else {
-						vscode.window.showInformationMessage(
-							"문제 번호를 입력해주세요."
-						);
+						vscode.window.showInformationMessage("문제 번호를 입력해주세요.");
 					}
 				});
 		})
@@ -83,9 +85,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// runTestCase 커맨드 등록
 	context.subscriptions.push(
-		vscode.commands.registerCommand("BOJ-EX.runTestCase", () => {
-			runTestCase(context);
-		})
+		vscode.commands.registerCommand(
+			"BOJ-EX.runTestCase",
+			(problemNumber?: string) => {
+				runTestCase(context, problemNumber);
+			}
+		)
 	);
 
 	// pushToGithub 커맨드 등록
@@ -102,6 +107,16 @@ export function activate(context: vscode.ExtensionContext) {
 		})
 	);
 
+	// submitProblem 커맨드 등록
+	context.subscriptions.push(
+		vscode.commands.registerCommand(
+			"BOJ-EX.submitProblem",
+			(problemNumber?: string) => {
+				submitProblem(problemNumber);
+			}
+		)
+	);
+
 	// showManual 커맨드 등록
 	context.subscriptions.push(
 		vscode.commands.registerCommand("BOJ-EX.showManual", () => {
@@ -110,4 +125,4 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 }
 
-export function deactivate() { }
+export function deactivate() {}
