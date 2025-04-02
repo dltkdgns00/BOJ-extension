@@ -4,9 +4,19 @@ import { tierAxios } from "../libs/tierAxios";
 
 export async function showProblem(
 	problemNumber: string,
-	context: vscode.ExtensionContext
+	context: vscode.ExtensionContext,
+	forceRefresh: boolean = false
 ) {
 	try {
+		// 디버그 콘솔에 시작 메시지 출력
+		console.log(`[BOJ-EX] 문제 조회 시작: ${problemNumber}번`);
+
+		// 강제 새로고침 옵션이 활성화된 경우 캐시 삭제
+		if (forceRefresh) {
+			console.log(`[BOJ-EX] 강제 새로고침 요청됨: 캐시 삭제`);
+			await context.globalState.update(`problem-${problemNumber}`, undefined);
+		}
+
 		const sp = await searchProblem(problemNumber, context);
 		const tier = await tierAxios(problemNumber);
 

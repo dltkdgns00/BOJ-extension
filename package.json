@@ -92,6 +92,12 @@
 					"name": "BOJ Extension",
 					"icon": "resources/icon.svg",
 					"type": "webview"
+				},
+				{
+					"id": "boj-submissions",
+					"name": "제출 현황",
+					"icon": "resources/icon.svg",
+					"type": "webview"
 				}
 			]
 		}
@@ -120,7 +126,7 @@
 	},
 	"dependencies": {
 		"@types/wcwidth": "^1.0.0",
-		"axios": "^1.4.0",
+		"axios": "^1.6.2",
 		"cheerio": "^1.0.0-rc.12",
 		"iconv-lite": "^0.6.3",
 		"markdown-it": "^13.0.1",

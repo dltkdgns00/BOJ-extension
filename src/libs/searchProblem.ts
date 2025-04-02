@@ -20,98 +20,194 @@ export async function searchProblem(
 	problemNumber: string,
 	context: vscode.ExtensionContext
 ): Promise<ProblemData> {
+	console.log(`[BOJ-EX] searchProblem 호출: ${problemNumber}번`);
+
 	const cacheKey = `problem-${problemNumber}`;
 	const cachedData = context.globalState.get<ProblemData>(cacheKey);
+
+	// 캐시 데이터 유효성 검사
 	if (cachedData) {
-		return cachedData;
+		console.log(`[BOJ-EX] 캐시된 데이터 발견: ${problemNumber}번`);
+
+		// 캐시 데이터가 유효한지 확인
+		const isValidCache = isValidProblemData(cachedData);
+
+		if (isValidCache) {
+			console.log(`[BOJ-EX] 유효한 캐시 데이터 사용: ${problemNumber}번`);
+			return cachedData;
+		} else {
+			console.log(
+				`[BOJ-EX] 캐시 데이터가 유효하지 않음: ${problemNumber}번, 새로 요청합니다.`
+			);
+			// 잘못된 캐시 데이터 삭제
+			await context.globalState.update(cacheKey, undefined);
+		}
 	}
 
-	const response = await axios.get(
-		`https://www.acmicpc.net/problem/${problemNumber}`,
-		{
-			headers: {
-				"User-Agent":
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-			},
-			responseType: "arraybuffer", // Response 데이터를 바이너리 데이터로 받도록 설정
+	try {
+		console.log(`[BOJ-EX] 백준 사이트에서 데이터 요청 중...`);
+		const response = await axios.get(
+			`https://www.acmicpc.net/problem/${problemNumber}`,
+			{
+				headers: {
+					"User-Agent":
+						"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+				},
+				responseType: "arraybuffer",
+			}
+		);
+
+		console.log(`[BOJ-EX] 데이터 수신 성공 (상태 코드: ${response.status})`);
+
+		const htmlData = response.data.toString("utf-8");
+		console.log(`[BOJ-EX] HTML 파싱 시작 (HTML 길이: ${htmlData.length})`);
+
+		// Cheerio를 사용하여 HTML 파싱
+		const $ = cheerio.load(htmlData);
+
+		// 타이틀 추출
+		const title = $("title").text().replace(" - 백준 온라인 저지", "").trim();
+		console.log(`[BOJ-EX] 문제 제목: ${title}`);
+
+		// 각 섹션 추출 시 컨솔에 로그 출력
+		const info = $("#problem-info").html();
+		console.log(`[BOJ-EX] info 추출: ${info ? "성공" : "실패"}`);
+
+		const description = $("#problem_description").html();
+		console.log(`[BOJ-EX] description 추출: ${description ? "성공" : "실패"}`);
+
+		const input = $("#problem_input").html();
+		console.log(`[BOJ-EX] input 추출: ${input ? "성공" : "실패"}`);
+
+		const output = $("#problem_output").html();
+		console.log(`[BOJ-EX] output 추출: ${output ? "성공" : "실패"}`);
+
+		// 제한 추출
+		const limit = $("#problem_limit").html();
+		console.log(`[BOJ-EX] limit 추출: ${limit ? "성공" : "실패"}`);
+
+		// 예제 입력, 예제 출력, 예제 설명 추출 (배열로 처리)
+		const sampleInputs: string[] = [];
+		const sampleOutputs: string[] = [];
+		const sampleExplains: string[] = [];
+
+		let i = 1;
+		while (true) {
+			const sampleInput = $(`#sample-input-${i}`).html();
+			const sampleOutput = $(`#sample-output-${i}`).html();
+			const sampleExplain = $(`#sample_explain_${i}`).html();
+
+			if (!sampleInput || !sampleOutput) {
+				break;
+			}
+
+			sampleInputs.push(sampleInput);
+			sampleOutputs.push(sampleOutput);
+			if (sampleExplain) {
+				sampleExplains.push(sampleExplain);
+			}
+			i++;
 		}
-	);
+		console.log(`[BOJ-EX] 예제 데이터 추출: ${sampleInputs.length}개`);
 
-	const htmlData = response.data.toString("utf-8"); // 바이너리 데이터를 문자열로 변환
+		// 힌트 추출
+		const hint = $("#problem_hint").html();
+		console.log(`[BOJ-EX] hint 추출: ${hint ? "성공" : "실패"}`);
 
-	// Cheerio를 사용하여 HTML 파싱
-	const $ = cheerio.load(htmlData);
+		// 출처 추출
+		const source = $("#source").html();
+		console.log(`[BOJ-EX] source 추출: ${source ? "성공" : "실패"}`);
 
-	const baseURL = "https://www.acmicpc.net";
+		const problemData: ProblemData = {
+			title: title || "제목 없음",
+			info: info || "",
+			description: description || "문제 내용이 없습니다.",
+			input: input || "입력 설명이 없습니다.",
+			output: output || "출력 설명이 없습니다.",
+			limit: limit || "",
+			sampleInputs: sampleInputs.length > 0 ? sampleInputs : [],
+			sampleOutputs: sampleOutputs.length > 0 ? sampleOutputs : [],
+			sampleExplains: sampleExplains,
+			hint: hint || "",
+			source: source || "",
+		};
 
-	$("img").each((index, element) => {
-		const src = $(element).attr("src");
-		if (src && !src.startsWith("http") && baseURL) {
-			// base URL과 img 요소의 src 속성을 조합하여 절대 URL로 변환
-			$(element).attr("src", baseURL + src);
-		}
-	});
+		console.log(`[BOJ-EX] 최종 데이터 생성 완료:`, problemData);
+		await context.globalState.update(cacheKey, problemData);
 
-	// 제목 추출
-	const title = $("#problem_title").text();
+		return problemData;
+	} catch (error) {
+		console.error(`[BOJ-EX] searchProblem 오류:`, error);
+		// 오류 시 기본 데이터 반환
+		return {
+			title: "제목 없음",
+			info: "",
+			description: "문제 내용을 불러오는 중 오류가 발생했습니다.",
+			input: "입력 설명을 불러오는 중 오류가 발생했습니다.",
+			output: "출력 설명을 불러오는 중 오류가 발생했습니다.",
+			limit: "",
+			sampleInputs: [],
+			sampleOutputs: [],
+			sampleExplains: [],
+			hint: "",
+			source: "",
+		};
+	}
+}
 
-	// 문제 정보 추출
-	const info = $("#problem-info").html();
-
-	// 본문 추출
-	const description = $("#problem_description").html()!.replace(/\t/g, "");
-
-	// 입력, 출력, 예제 입력, 예제 출력 추출
-	const input = $("#problem_input").html()!.replace(/\t/g, "");
-	const output = $("#problem_output").html()!.replace(/\t/g, "");
-
-	// 제한 추출
-	const limit = $("#problem_limit").html();
-
-	// 예제 입력, 예제 출력, 예제 설명 추출 (배열로 처리)
-	const sampleInputs: string[] = [];
-	const sampleOutputs: string[] = [];
-	const sampleExplains: string[] = [];
-
-	let i = 1;
-	while (true) {
-		const sampleInput = $(`#sample-input-${i}`).html();
-		const sampleOutput = $(`#sample-output-${i}`).html();
-		const sampleExplain = $(`#sample_explain_${i}`).html();
-
-		if (!sampleInput || !sampleOutput) {
-			break;
-		}
-
-		sampleInputs.push(sampleInput);
-		sampleOutputs.push(sampleOutput);
-		if (sampleExplain) {
-			sampleExplains.push(sampleExplain);
-		}
-		i++;
+// 문제 데이터의 유효성을 검사하는 함수
+function isValidProblemData(data: ProblemData): boolean {
+	// 필수 필드가 존재하는지 확인
+	if (!data.title || data.title === "제목 없음") {
+		console.log("[BOJ-EX] 캐시 검증 실패: 제목 없음");
+		return false;
 	}
 
-	// 힌트 추출
-	const hint = $("#problem_hint").html();
+	if (
+		!data.description ||
+		data.description === "문제 내용이 없습니다." ||
+		data.description === "문제 내용을 불러오는 중 오류가 발생했습니다."
+	) {
+		console.log("[BOJ-EX] 캐시 검증 실패: 문제 내용 없음");
+		return false;
+	}
 
-	// 출처 추출
-	const source = $("#source").html();
+	if (
+		!data.input ||
+		data.input === "입력 설명이 없습니다." ||
+		data.input === "입력 설명을 불러오는 중 오류가 발생했습니다."
+	) {
+		console.log("[BOJ-EX] 캐시 검증 실패: 입력 설명 없음");
+		return false;
+	}
 
-	const problemData: ProblemData = {
-		title,
-		info,
-		description,
-		input,
-		output,
-		limit,
-		sampleInputs,
-		sampleOutputs,
-		sampleExplains,
-		hint,
-		source,
-	};
+	if (
+		!data.output ||
+		data.output === "출력 설명이 없습니다." ||
+		data.output === "출력 설명을 불러오는 중 오류가 발생했습니다."
+	) {
+		console.log("[BOJ-EX] 캐시 검증 실패: 출력 설명 없음");
+		return false;
+	}
 
-	await context.globalState.update(cacheKey, problemData);
+	// 예제 입출력이 있어야 함 (최소 하나 이상)
+	if (
+		!Array.isArray(data.sampleInputs) ||
+		!Array.isArray(data.sampleOutputs) ||
+		data.sampleInputs.length === 0 ||
+		data.sampleOutputs.length === 0
+	) {
+		console.log("[BOJ-EX] 캐시 검증 실패: 예제 입출력 없음");
+		return false;
+	}
 
-	return problemData;
+	// 예제 입력과 출력의 개수가 일치해야 함
+	if (data.sampleInputs.length !== data.sampleOutputs.length) {
+		console.log("[BOJ-EX] 캐시 검증 실패: 예제 입력과 출력 개수 불일치");
+		return false;
+	}
+
+	// 모든 검증 통과
+	console.log("[BOJ-EX] 캐시 검증 성공: 모든 필수 데이터 존재");
+	return true;
 }

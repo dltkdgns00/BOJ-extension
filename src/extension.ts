@@ -7,7 +7,7 @@ import { makeWorkflow } from "./libs/makeWorkflow";
 import { showManual } from "./commands/showManual";
 import { runTestCase } from "./commands/runTestCase";
 import { getProbNum } from "./libs/getProbNum";
-import { SidebarProvider } from "./sidebar";
+import { SidebarProvider, SubmissionProvider } from "./sidebar";
 import { submitProblem } from "./commands/submitProblem";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -34,6 +34,15 @@ export function activate(context: vscode.ExtensionContext) {
 	const sidebarProvider = new SidebarProvider(context.extensionUri);
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider("boj-sidebar", sidebarProvider)
+	);
+
+	// 제출 현황 Provider 등록
+	const submissionProvider = new SubmissionProvider(context.extensionUri);
+	context.subscriptions.push(
+		vscode.window.registerWebviewViewProvider(
+			"boj-submissions",
+			submissionProvider
+		)
 	);
 
 	// showProblem 커맨드 등록
@@ -121,6 +130,14 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.commands.registerCommand("BOJ-EX.showManual", () => {
 			showManual(context);
+		})
+	);
+
+	// showSubmissions 커맨드 등록
+	context.subscriptions.push(
+		vscode.commands.registerCommand("BOJ-EX.showSubmissions", () => {
+			// 제출 현황 탭을 포커스
+			vscode.commands.executeCommand("boj-submissions.focus");
 		})
 	);
 }
