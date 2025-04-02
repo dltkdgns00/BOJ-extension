@@ -1,4 +1,3 @@
-import path from "path";
 import * as vscode from "vscode";
 
 export function showManual(context: vscode.ExtensionContext) {
@@ -54,29 +53,29 @@ ${getThemeStyles()}
 		vscode.Uri.joinPath(imagesFolderPath, "../BOJ-extension.gif")
 	)}"></p>
 <ol>
-<li><code>Ctrl + Shift + P</code> or <code>Cmd + Shift + P</code> 를 눌러 명령어 창을 엽니다.</li>
-<li>커맨드를 입력합니다.<ul>
-<li><code>BOJ: Create Problem File</code><ul>
-<li>백준 온라인 저지 문제 번호를 입력하면 해당 문제의 제목을 파일명으로 하는 파일이 생성되고, 자동으로 헤더가 생성된 후, 문제가 열립니다.</li>
-</ul>
-</li>
-<li><code>BOJ: Show Problem</code><ul>
+<li>vscode의 사이드 바에서 BOJ-extension 아이콘을 클릭합니다.</li>
+<li>버튼을 클릭합니다.<ul>
+<li><code>📝 문제 보기</code><ul>
 <li>백준 온라인 저지 문제 번호를 입력하면 해당 문제가 열립니다.</li>
 </ul>
 </li>
-<li><code>BOJ: Insert Header Comment</code><ul>
+<li><code>➕ 문제 생성</code><ul>
+<li>백준 온라인 저지 문제 번호를 입력하면 해당 문제의 제목을 파일명으로 하는 파일이 생성되고, 자동으로 헤더가 생성된 후, 문제가 열립니다.</li>
+</ul>
+</li>
+<li><code>✏️ 헤더 코멘트 삽입</code><ul>
 <li>백준 온라인 저지 문제 번호를 입력하면 해당 파일의 정보를 담은 아름다운 헤더가 생성됩니다.</li>
 </ul>
 </li>
-<li><code>BOJ: Push To Github</code><ul>
+<li><code>🚀 GitHub에 푸시</code><ul>
 <li>현재 워크스페이스에 Github Action을 위한 <code>workflow.yml</code>파일을 생성하고 깃허브 레포지토리에 푸시합니다.</li>
 </ul>
 </li>
-<li><code>BOJ: Make Workflow</code><ul>
+<li><code>⚙️ 워크플로우 생성</code><ul>
 <li>Github Action을 위한 <code>workflow.yml</code>파일을 생성합니다.</li>
 </ul>
 </li>
-<li><code>BOJ: Show Manual</code><ul>
+<li><code>📚 매뉴얼 보기</code><ul>
 <li>BOJ-extension의 매뉴얼을 엽니다.</li>
 </ul>
 </li>

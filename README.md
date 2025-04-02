@@ -15,22 +15,23 @@ vscode를 위한 백준 온라인 저지 문제 풀이 확장 프로그램입니
 ![BOJ-extension](./BOJ-extension.gif)
 
 1. 확장을 설치 후 설정에서 자주 사용하는 언어의 확장자와 본인이 백준 온라인 저지에서 사용하는 아이디를 입력합니다.
-2. `Ctrl + Shift + P` or `Cmd + Shift + P` 를 눌러 명령어 창을 엽니다.
-3. 커맨드를 입력합니다.
-    - `BOJ: Create Problem File`
-        - 백준 온라인 저지 문제 번호를 입력하면 해당 문제의 제목을 파일명으로 하는 파일이 생성되고, 자동으로 헤더가 생성된 후, 문제가 열립니다.
-    - `BOJ: Show Problem`
-        - 백준 온라인 저지 문제 번호를 입력하면 해당 문제가 열립니다.
-    - `BOJ: Run Test Case`
-        - 백준 온라인 저지 문제의 테스트 케이스를 가져와 자동으로 실행하고 채점합니다.
-    - `BOJ: Insert Header Comment`
-        - 백준 온라인 저지 문제 번호를 입력하면 해당 파일의 정보를 담은 아름다운 헤더가 생성됩니다.
-    - `BOJ: Push To Github`
-        - 현재 워크스페이스에 Github Action을 위한 `workflow.yml`파일을 생성하고 깃허브 레포지토리에 푸시합니다.
-    - `BOJ: Make workflow`
-        - Github Action을 위한 `workflow.yml`파일을 생성합니다.
-    - `BOJ: Show Manual`
-        - BOJ-extension의 매뉴얼을 엽니다.
+2. vscode의 사이드 바에서 BOJ-extension 아이콘을 클릭합니다.
+3. 버튼을 클릭합니다.
+
+   - `📝 문제 보기`
+     - 백준 온라인 저지 문제 번호를 입력하면 해당 문제가 열립니다.
+   - `➕ 문제 생성`
+     - 백준 온라인 저지 문제 번호를 입력하면 해당 문제의 제목을 파일명으로 하는 파일이 생성되고, 자동으로 헤더가 생성된 후, 문제가 열립니다.
+   - `✏️ 헤더 코멘트 삽입`
+     - 백준 온라인 저지 문제 번호를 입력하면 해당 파일의 정보를 담은 아름다운 헤더가 생성됩니다.
+   - `🚀 GitHub에 푸시`
+     - 현재 워크스페이스에 Github Action을 위한 `workflow.yml`파일을 생성하고 깃허브 레포지토리에 푸시합니다.
+   - `⚙️ 워크플로우 생성`
+     - Github Action을 위한 `workflow.yml`파일을 생성합니다.
+   - `📚 매뉴얼 보기`
+     - BOJ-extension의 매뉴얼을 엽니다.
+
+   ※ 상응하는 커맨드도 존재합니다.
 
 ## BOJ: Run Test Case
 
@@ -48,9 +49,9 @@ BOJ-extension에서 자동으로 생성하는 workflow.yml파일을 사용하면
 
 ## 링크
 
--   [Github repository](https://github.com/dltkdgns00/BOJ-extension)
--   [Microsoft Marketplace](https://marketplace.visualstudio.com/items?itemName=dltkdgns00.BOJ-EX)
--   [Github Action for BOJ-extension](https://github.com/dltkdgns00/BOJ-action)
+- [Github repository](https://github.com/dltkdgns00/BOJ-extension)
+- [Microsoft Marketplace](https://marketplace.visualstudio.com/items?itemName=dltkdgns00.BOJ-EX)
+- [Github Action for BOJ-extension](https://github.com/dltkdgns00/BOJ-action)
 
 ## 라이선스
 
@@ -58,14 +59,14 @@ MIT License
 
 ## 개발자
 
--   [dltkdgns00](https://github.com/dltkdgns00)
+- [dltkdgns00](https://github.com/dltkdgns00)
 
 ### 후원하기
 
 <a href="https://www.buymeacoffee.com/dltkdgns00" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>  
  [![dltkdgns00](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/dltkdgns00)
 
--   후원하실 때에 메시지에 Github 아이디를 남겨주시면 후원자 리스트에 추가해드립니다.
+- 후원하실 때에 메시지에 Github 아이디를 남겨주시면 후원자 리스트에 추가해드립니다.
 
 ### 후원자 리스트
 
