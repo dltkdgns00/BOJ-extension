@@ -55,7 +55,9 @@ export async function runTestCase(
 		const sp = await searchProblem(probNum, context);
 
 		if (!sp.sampleInputs || !sp.sampleOutputs) {
-			vscode.window.showErrorMessage("Sample inputs or outputs not found.");
+			vscode.window.showErrorMessage(
+				"예제 입력 또는 출력을 찾을 수 없습니다. 문제 페이지를 확인해주세요."
+			);
 			return;
 		}
 

@@ -91,7 +91,7 @@ export async function createProblem(
 		context.globalState.update("currentProblemNumber", problemNumber);
 	} catch (error) {
 		vscode.window.showErrorMessage(
-			`문제 생성 중 오류가 발생했습니다: ${error}`
+			`문제 생성 중 오류가 발생했습니다: ${error}. 네트워크 연결을 확인하고 다시 시도해주세요.`
 		);
 	}
 }

@@ -120,13 +120,11 @@ export async function makeWorkflow() {
 		console.log("YAML 파일이 성공적으로 생성되었습니다.");
 	} catch (error) {
 		if (error instanceof Error && (error as any).code === "EEXIST") {
-			console.log(
-				"workflow.yml 파일이 이미 존재하므로 생성하지 않습니다."
-			);
+			console.log("workflow.yml 파일이 이미 존재하므로 생성하지 않습니다.");
 			return;
 		} else {
 			vscode.window.showErrorMessage(
-				"workflow.yml 파일 생성에 실패했습니다."
+				"워크플로우 파일 생성에 실패했습니다. 권한을 확인하거나 다시 시도해주세요."
 			);
 			console.log(error);
 			return;

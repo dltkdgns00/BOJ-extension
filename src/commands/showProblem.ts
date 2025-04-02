@@ -46,7 +46,11 @@ export async function showProblem(
 			context.subscriptions
 		);
 	} catch (error) {
-		vscode.window.showErrorMessage("Failed to fetch the problem: " + error);
+		vscode.window.showErrorMessage(
+			"문제를 불러오는 데 실패했습니다: " +
+				error +
+				"\n네트워크 연결을 확인하거나 잠시 후 다시 시도해 주세요."
+		);
 	}
 }
 

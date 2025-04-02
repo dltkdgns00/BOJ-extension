@@ -13,7 +13,9 @@ export async function headerComment(problemNumber: string) {
 	const extension = config.get<string>("extension", "");
 
 	if (!editor) {
-		vscode.window.showErrorMessage("No active text editor found.");
+		vscode.window.showErrorMessage(
+			"열린 텍스트 에디터가 없습니다. 파일을 먼저 열어주세요."
+		);
 		return;
 	}
 
@@ -25,9 +27,7 @@ export async function headerComment(problemNumber: string) {
 	vscode.window.showInformationMessage("헤더 주석이 생성되었습니다.");
 }
 
-async function getUserInput(
-	problemNumber: string
-): Promise<{
+async function getUserInput(problemNumber: string): Promise<{
 	author: string;
 	authorUrl: string;
 	url: string;
@@ -37,7 +37,9 @@ async function getUserInput(
 	const author = config.get<string>("author", "");
 
 	if (!author) {
-		throw new Error("author가 설정되지 않았습니다");
+		throw new Error(
+			"사용자 아이디가 설정되지 않았습니다. 설정에서 BOJ > author를 확인해주세요."
+		);
 	}
 
 	const authorUrl = "boj.kr/u/" + author;

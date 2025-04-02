@@ -32,11 +32,11 @@ export async function pushToGithub() {
 		// Git push origin main (You can change "main" to your branch name)
 		await git.push("origin", "main");
 
-		vscode.window.showInformationMessage(
-			"Github에 성공적으로 푸시되었습니다."
-		);
+		vscode.window.showInformationMessage("GitHub에 성공적으로 푸시되었습니다.");
 	} catch (error) {
-		vscode.window.showErrorMessage("Github에 푸시하는데 실패했습니다.");
+		vscode.window.showErrorMessage(
+			"GitHub에 푸시하는 데 실패했습니다. 네트워크 연결이나 권한을 확인해주세요."
+		);
 		console.error(error);
 	}
 }
