@@ -1,101 +1,115 @@
 import * as vscode from "vscode";
-import * as fs from "fs";
-import * as path from "path";
-import { searchProblem } from "../libs/searchProblem";
-import { headerComment } from "./headerComment";
+import path from "path";
+import fs from "fs";
 import { showProblem } from "./showProblem";
+import { headerComment } from "./headerComment";
+import { searchProblem } from "../libs/searchProblem";
+import { tierAxios } from "../libs/tierAxios";
 
-export async function createProblem(
-	context: vscode.ExtensionContext,
-	problemNumber?: string
-) {
-	// 문제 번호가 전달되지 않은 경우 사용자에게 입력 요청
-	if (!problemNumber) {
-		problemNumber = await vscode.window.showInputBox({
-			prompt: "문제 번호를 입력하세요.",
+// HTML 콘텐츠에서 불필요한 탭과 공백을 제거하는 함수
+function cleanHtmlContent(content: string | null): string {
+	if (!content) {
+		return "";
+	}
+	
+	// 앞뒤 공백 제거
+	let cleaned = content.trim();
+	
+	// 각 줄 시작 부분의 탭과 불필요한 공백 제거
+	cleaned = cleaned.replace(/^[ \t]+/gm, "");
+	
+	// 연속된 빈 줄을 하나로 줄이기
+	cleaned = cleaned.replace(/\n{3,}/g, "\n\n");
+	
+	return cleaned;
+}
+
+export function createProblem(context: vscode.ExtensionContext) {
+	vscode.window
+		.showInputBox({
+			prompt: "문제 번호를 입력해주세요.",
 			placeHolder: "예: 1000",
-		});
-	}
-
-	if (!problemNumber) {
-		vscode.window.showInformationMessage("문제 번호를 입력해주세요.");
-		return;
-	}
-
-	try {
-		// 문제 정보 가져오기
-		const problemInfo = await searchProblem(problemNumber, context);
-
-		// 현재 워크스페이스 경로 가져오기
-		const workspaceFolders = vscode.workspace.workspaceFolders;
-		if (!workspaceFolders) {
-			vscode.window.showErrorMessage("열린 워크스페이스가 없습니다.");
-			return;
-		}
-
-		const rootPath = workspaceFolders[0].uri.fsPath;
-
-		// 사용자 설정에서 확장자 가져오기
-		const config = vscode.workspace.getConfiguration("BOJ");
-		const extension = config.get<string>("extension", "");
-
-		if (!extension) {
-			vscode.window.showErrorMessage(
-				"언어 확장자 설정이 되어있지 않습니다. 설정에서 확인해주세요."
-			);
-			return;
-		}
-
-		// 간결하게 수정 - 직접 콜론 사용
-		const problemFolderName = `${problemNumber}번: ${problemInfo.title}`;
-		const problemFolderPath = path.join(rootPath, problemFolderName);
-
-		// 폴더가 없으면 생성
-		if (!fs.existsSync(problemFolderPath)) {
-			fs.mkdirSync(problemFolderPath, { recursive: true });
-		}
-
-		// 문제 파일 경로 (문제 이름.확장자)
-		const problemFilePath = path.join(
-			problemFolderPath,
-			`${problemInfo.title}.${extension}`
-		);
-
-		// 파일이 이미 존재하는지 확인
-		if (fs.existsSync(problemFilePath)) {
-			const overwrite = await vscode.window.showWarningMessage(
-				"파일이 이미 존재합니다. 덮어쓰시겠습니까?",
-				"예",
-				"아니오"
-			);
-
-			if (overwrite !== "예") {
+		})
+		.then(async (problemNumber) => {
+			if (!problemNumber) {
+				vscode.window.showErrorMessage("문제 번호가 입력되지 않았습니다.");
 				return;
 			}
-		}
 
-		// 파일 생성
-		fs.writeFileSync(problemFilePath, "");
+			try {
+				const config = vscode.workspace.getConfiguration("BOJ");
+				const extension = config.get<string>("extension", "");
 
-		// 생성된 파일 열기
-		const document = await vscode.workspace.openTextDocument(problemFilePath);
-		await vscode.window.showTextDocument(document);
+				const sp = await searchProblem(problemNumber, context);
+				const tier = await tierAxios(problemNumber);
 
-		// 헤더 코멘트 추가
-		await headerComment(problemNumber);
+				// 제목 추출
+				// replace를 사용하여 폴더명에 사용할 수 없는 문자를 바꿔준다.
+				const problemName = sp.title;
 
-		vscode.window.showInformationMessage(
-			`${problemNumber}번 문제 파일이 생성되었습니다.`
-		);
+				// 폴더명 생성
+				const folderName = `${problemNumber}번: ${problemName}`;
+				const folderPath = path.join(
+					vscode.workspace.workspaceFolders![0].uri.fsPath,
+					folderName
+				);
+				fs.mkdirSync(folderPath);
 
-		// 전역 상태에 현재 문제 번호 저장
-		context.globalState.update("currentProblemNumber", problemNumber);
+				// 파일명 생성
+				let fileName = "";
+				if (extension === "java") {
+					fileName = `Main.java`;
+				} else {
+					fileName = `${problemName}.${extension}`;
+				}
+				// md 파일명 생성
+				const readme = `README.md`;
 
-		// 문제 내용 표시
-		await showProblem(problemNumber, context);
-	} catch (error) {
-		vscode.window.showErrorMessage(
-			`문제 생성 중 오류가 발생했습니다: ${error}. 네트워크 연결을 확인하고 다시 시도해주세요.`
-		);
-	}
+				// 폴더 생성 후 폴더 안에 파일 생성
+				const fnUri = vscode.Uri.joinPath(
+					vscode.workspace.workspaceFolders![0].uri,
+					folderName,
+					fileName
+				);
+				const readmeUri = vscode.Uri.joinPath(
+					vscode.workspace.workspaceFolders![0].uri,
+					folderName,
+					readme
+				);
+
+				// README.md 파일 내용
+				const readmeContent = `# ${problemNumber}번: ${problemName} - <img src="${tier.svg}" style="height:20px" /> ${tier.name}\n\n<!-- performance -->\n\n<!-- 문제 제출 후 깃허브에 푸시를 했을 때 제출한 코드의 성능이 입력될 공간입니다.-->\n\n<!-- end -->\n\n## 문제\n\n[문제 링크](https://boj.kr/${problemNumber})\n\n${cleanHtmlContent(sp.description)}\n\n## 입력\n\n${cleanHtmlContent(sp.input)}\n\n## 출력\n\n${cleanHtmlContent(sp.output)}\n\n## 소스코드\n\n[소스코드 보기](${fileName.replace(/ /g, "%20")})`;
+				const encoder = new TextEncoder();
+				const readmeData = encoder.encode(readmeContent);
+
+				// 파일 생성
+				await vscode.workspace.fs.writeFile(fnUri, new Uint8Array());
+				await vscode.workspace.fs.writeFile(readmeUri, readmeData);
+
+				// 왼쪽 분할 화면에 텍스트 에디터를 열기
+				const document = await vscode.workspace.openTextDocument(fnUri);
+				await vscode.window.showTextDocument(document, {
+					viewColumn: vscode.ViewColumn.One,
+				});
+
+				// 완료 메시지 표시
+				vscode.window.showInformationMessage(
+					`'${fileName}' 파일이 생성되었습니다.`
+				);
+
+				showProblem(problemNumber, context);
+				headerComment(problemNumber);
+			} catch (error) {
+				if (error instanceof Error && (error as any).code === "EEXIST") {
+					vscode.window.showErrorMessage("이미 해당 문제의 폴더가 존재합니다.");
+				} else if (
+					error instanceof Error &&
+					(error as any).code === "ERR_BAD_REQUEST"
+				) {
+					vscode.window.showErrorMessage("문제를 찾을 수 없습니다.");
+				}
+				console.log(error);
+				return;
+			}
+		});
 }

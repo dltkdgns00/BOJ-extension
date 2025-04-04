@@ -25,24 +25,24 @@ export async function searchProblem(
 	const cacheKey = `problem-${problemNumber}`;
 	const cachedData = context.globalState.get<ProblemData>(cacheKey);
 
-	// 캐시 데이터 유효성 검사
-	if (cachedData) {
-		console.log(`[BOJ-EX] 캐시된 데이터 발견: ${problemNumber}번`);
+	// // 캐시 데이터 유효성 검사
+	// if (cachedData) {
+	// 	console.log(`[BOJ-EX] 캐시된 데이터 발견: ${problemNumber}번`);
 
-		// 캐시 데이터가 유효한지 확인
-		const isValidCache = isValidProblemData(cachedData);
+	// 	// 캐시 데이터가 유효한지 확인
+	// 	const isValidCache = isValidProblemData(cachedData);
 
-		if (isValidCache) {
-			console.log(`[BOJ-EX] 유효한 캐시 데이터 사용: ${problemNumber}번`);
-			return cachedData;
-		} else {
-			console.log(
-				`[BOJ-EX] 캐시 데이터가 유효하지 않음: ${problemNumber}번, 새로 요청합니다.`
-			);
-			// 잘못된 캐시 데이터 삭제
-			await context.globalState.update(cacheKey, undefined);
-		}
-	}
+	// 	if (isValidCache) {
+	// 		console.log(`[BOJ-EX] 유효한 캐시 데이터 사용: ${problemNumber}번`);
+	// 		return cachedData;
+	// 	} else {
+	// 		console.log(
+	// 			`[BOJ-EX] 캐시 데이터가 유효하지 않음: ${problemNumber}번, 새로 요청합니다.`
+	// 		);
+	// 		// 잘못된 캐시 데이터 삭제
+	// 		await context.globalState.update(cacheKey, undefined);
+	// 	}
+	// }
 
 	try {
 		console.log(`[BOJ-EX] 백준 사이트에서 데이터 요청 중...`);
@@ -66,7 +66,7 @@ export async function searchProblem(
 		const $ = cheerio.load(htmlData);
 
 		// 타이틀 추출
-		const title = $("title").text().replace(" - 백준 온라인 저지", "").trim();
+		const title = $("#problem_title").text();
 		console.log(`[BOJ-EX] 문제 제목: ${title}`);
 
 		// 각 섹션 추출 시 컨솔에 로그 출력
