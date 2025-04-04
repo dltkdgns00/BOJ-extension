@@ -25,24 +25,24 @@ export async function searchProblem(
 	const cacheKey = `problem-${problemNumber}`;
 	const cachedData = context.globalState.get<ProblemData>(cacheKey);
 
-	// // 캐시 데이터 유효성 검사
-	// if (cachedData) {
-	// 	console.log(`[BOJ-EX] 캐시된 데이터 발견: ${problemNumber}번`);
+	// 캐시 데이터 유효성 검사
+	if (cachedData) {
+		console.log(`[BOJ-EX] 캐시된 데이터 발견: ${problemNumber}번`);
 
-	// 	// 캐시 데이터가 유효한지 확인
-	// 	const isValidCache = isValidProblemData(cachedData);
+		// 캐시 데이터가 유효한지 확인
+		const isValidCache = isValidProblemData(cachedData);
 
-	// 	if (isValidCache) {
-	// 		console.log(`[BOJ-EX] 유효한 캐시 데이터 사용: ${problemNumber}번`);
-	// 		return cachedData;
-	// 	} else {
-	// 		console.log(
-	// 			`[BOJ-EX] 캐시 데이터가 유효하지 않음: ${problemNumber}번, 새로 요청합니다.`
-	// 		);
-	// 		// 잘못된 캐시 데이터 삭제
-	// 		await context.globalState.update(cacheKey, undefined);
-	// 	}
-	// }
+		if (isValidCache) {
+			console.log(`[BOJ-EX] 유효한 캐시 데이터 사용: ${problemNumber}번`);
+			return cachedData;
+		} else {
+			console.log(
+				`[BOJ-EX] 캐시 데이터가 유효하지 않음: ${problemNumber}번, 새로 요청합니다.`
+			);
+			// 잘못된 캐시 데이터 삭제
+			await context.globalState.update(cacheKey, undefined);
+		}
+	}
 
 	try {
 		console.log(`[BOJ-EX] 백준 사이트에서 데이터 요청 중...`);

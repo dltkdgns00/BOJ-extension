@@ -10,7 +10,30 @@ import { getProbNum } from "./libs/getProbNum";
 import { SidebarProvider, SubmissionProvider } from "./sidebar";
 import { submitProblem } from "./commands/submitProblem";
 
+// 모든 캐시를 완전히 초기화하는 함수
+async function clearAllCache(context: vscode.ExtensionContext) {
+	console.log("[BOJ-EX] 캐시 초기화 시작");
+	
+	// 모든 글로벌 상태 키 조회
+	const keys = context.globalState.keys();
+	const problemCacheKeys = keys.filter(key => key.startsWith('problem-'));
+	let clearedCount = 0;
+	
+	// 모든 문제 캐시 삭제
+	for (const key of problemCacheKeys) {
+		await context.globalState.update(key, undefined);
+		clearedCount++;
+	}
+	
+	console.log(`[BOJ-EX] 캐시 초기화 완료: ${clearedCount}개 삭제됨`);
+}
+
 export function activate(context: vscode.ExtensionContext) {
+	// 확장 프로그램 시작 시 모든 캐시 초기화
+	clearAllCache(context).catch(err => {
+		console.error("[BOJ-EX] 캐시 초기화 중 오류 발생:", err);
+	});
+	
 	// 확장프로그램이 처음 실행될 때, 설정이 되어있지 않으면 설정창을 띄워준다.
 	const config = vscode.workspace.getConfiguration("BOJ");
 	const extension = config.get<string>("extension", "");
