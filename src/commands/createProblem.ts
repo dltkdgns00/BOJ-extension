@@ -68,8 +68,16 @@ export function createProblem(context: vscode.ExtensionContext) {
 						.replace(/\^/g, "＾");
 				}
 
-				// 폴더명 생성
-				const folderName = `${problemNumber}번: ${problemName}`;
+				// 윈도우에서는 콜론(:) 문자를 파일명에 사용할 수 없으므로 폴더명 생성 시 분리자 변경
+				let folderName;
+				if (platform === "win32") {
+					// 윈도우에서는 `-` 또는 `_`와 같은 구분자 사용
+					folderName = `${problemNumber}번 - ${problemName}`;
+				} else {
+					// 다른 OS에서는 원래 의도한 콜론을 사용
+					folderName = `${problemNumber}번: ${problemName}`;
+				}
+
 				const folderPath = path.join(
 					vscode.workspace.workspaceFolders![0].uri.fsPath,
 					folderName
