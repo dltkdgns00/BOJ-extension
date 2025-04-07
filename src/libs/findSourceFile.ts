@@ -104,27 +104,6 @@ export async function findSourceFileByProblemNumber(
 			foundFiles = await vscode.workspace.findFiles(fileNamePattern);
 		}
 
-		// 파일을 찾지 못한 경우
-		if (foundFiles.length === 0) {
-			// 파일이 없는 경우, 새 파일 생성 제안
-			const createFile = await vscode.window.showInformationMessage(
-				`문제 ${problemNumber}번 파일을 찾을 수 없습니다. 새 파일을 생성하시겠습니까?`,
-				"예",
-				"아니오"
-			);
-
-			if (createFile === "예") {
-				// createProblem 명령어 호출
-				await vscode.commands.executeCommand(
-					"BOJ-EX.createProblem",
-					problemNumber
-				);
-				// 새 파일 생성 후 다시 검색
-				return findSourceFileByProblemNumber(problemNumber);
-			}
-			return undefined;
-		}
-
 		// 한 개의 파일만 찾은 경우
 		if (foundFiles.length === 1) {
 			return foundFiles[0].fsPath;
