@@ -46,18 +46,53 @@ export async function searchProblem(
 
 	try {
 		console.log(`[BOJ-EX] 백준 사이트에서 데이터 요청 중...`);
-		const response = await axios.get(
-			`https://www.acmicpc.net/problem/${problemNumber}`,
-			{
-				headers: {
-					"User-Agent":
-						"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-				},
-				responseType: "arraybuffer",
-			}
-		);
 
-		console.log(`[BOJ-EX] 데이터 수신 성공 (상태 코드: ${response.status})`);
+		// 최대 재시도 횟수 설정
+		const maxRetries = 3;
+		let retryCount = 0;
+		let response;
+
+		while (retryCount < maxRetries) {
+			response = await axios.get(
+				`https://www.acmicpc.net/problem/${problemNumber}`,
+				{
+					headers: {
+						"User-Agent":
+							"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+					},
+					responseType: "arraybuffer",
+				}
+			);
+
+			console.log(`[BOJ-EX] 데이터 요청 완료 ${response.data}`);
+
+			console.log(`[BOJ-EX] 상태 코드: ${response.status}`);
+
+			// 상태 코드가 200이면 성공, 계속 진행
+			if (response.status === 200) {
+				break;
+			}
+
+			// 상태 코드가 202면 아직 처리 중이므로 재시도
+			if (response.status === 202) {
+				retryCount++;
+				console.log(
+					`[BOJ-EX] 상태 코드 202 수신, 재시도 중... (${retryCount}/${maxRetries})`
+				);
+				// 1초 대기 후 재시도
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+				continue;
+			}
+
+			// 다른 상태 코드는 그냥 진행
+			break;
+		}
+
+		if (response.status !== 200) {
+			console.log(
+				`[BOJ-EX] 최종 상태 코드: ${response.status}, 데이터 처리를 시도합니다.`
+			);
+		}
 
 		const htmlData = response.data.toString("utf-8");
 		console.log(`[BOJ-EX] HTML 파싱 시작 (HTML 길이: ${htmlData.length})`);

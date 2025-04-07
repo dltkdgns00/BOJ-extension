@@ -38,18 +38,18 @@ export async function showProblem(
 		// 웹뷰 생성 후 메시지 수신 처리 추가
 		panel.webview.onDidReceiveMessage(
 			async (message) => {
-				switch (message.command) {
-					case "runTestCase":
-						// 문제 번호를 전역 상태로 저장
-						context.globalState.update("currentProblemNumber", problemNumber);
-						vscode.commands.executeCommand("BOJ-EX.runTestCase", problemNumber);
-						break;
-					case "submitProblem":
-						vscode.commands.executeCommand(
-							"BOJ-EX.submitProblem",
-							message.problemNumber
-						);
-						break;
+				if (message.command === "runTestCase") {
+					// 문제 번호를 전역 상태로 저장
+					await context.globalState.update(
+						"currentProblemNumber",
+						problemNumber
+					);
+					vscode.commands.executeCommand("BOJ-EX.runTestCase", problemNumber);
+				} else if (message.command === "submitProblem") {
+					vscode.commands.executeCommand(
+						"BOJ-EX.submitProblem",
+						problemNumber // 메시지에서 받지 않고 함수 매개변수 사용
+					);
 				}
 			},
 			undefined,
