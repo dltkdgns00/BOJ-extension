@@ -1,13 +1,22 @@
 # Change Log
 
+## [1.3.4] - 2025-04-07
+
+### Bug Fixed
+
+- Windows에서 폴더 생성시 폴더 이름에 특수문자가 포함되어 있을 경우 폴더가 생성되지 않는 버그 수정
+- 문제 제출 페이지 이동 시 문제 파일을 찾을 수 없다는 문구 삭제
+
 ## [1.3.3] - 2025-04-05
 
 ### Feature Added
+
 - 확장을 재시작 할 때 캐시를 삭제하는 기능 추가
 
 ## [1.3.2] - 2025-04-05
 
 ### Bug Fixed
+
 - [Issue #10](https://github.com/dltkdgns00/BOJ-extension/issues/10) - Bug Issue
   - 문제 생성시 문제 번호가 잘못 들어가는 버그 수정
   - 문제 생성시 README.md 파일이 생성되지 않는 버그 수정
