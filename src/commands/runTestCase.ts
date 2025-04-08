@@ -3,6 +3,7 @@ import { searchProblem } from "../libs/searchProblem";
 import { spawn, execSync } from "child_process";
 import * as path from "path";
 import { findSourceFileByProblemNumber } from "../libs/findSourceFile";
+import { getProbNum } from "../libs/getProbNum";
 
 export async function runTestCase(
 	context: vscode.ExtensionContext,
@@ -13,18 +14,9 @@ export async function runTestCase(
 
 	// 단계 1: 문제 번호 확인
 	let probNum = problemNumber;
-	if (!probNum) {
-		probNum = context.globalState.get("currentProblemNumber");
-	}
 
 	if (!probNum) {
-		if (editor) {
-			const fileName = editor.document.fileName;
-			const match = fileName.match(/(\d+)/);
-			if (match) {
-				probNum = match[1];
-			}
-		}
+		probNum = getProbNum();
 	}
 
 	if (!probNum) {

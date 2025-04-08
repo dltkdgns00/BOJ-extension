@@ -1,11 +1,20 @@
 # Change Log
 
+## [1.3.5] - 2025-04-08
+
+### Bug Fixed
+
+- [Issue #11](https://github.com/dltkdgns00/BOJ-extension/issues/11) - Bug Issue
+  - 테스트 케이스 실행 시 문제 번호를 잘못 가져오는 버그 수정
+- 문제 보기 화면에서 테스트 케이스 실행, 제출 페이지 이동 버튼 중복 생성되는 버그 수정
+
 ## [1.3.4] - 2025-04-07
 
 ### Bug Fixed
 
-- Windows에서 폴더 생성시 폴더 이름에 특수문자가 포함되어 있을 경우 폴더가 생성되지 않는 버그 수정
-- 문제 제출 페이지 이동 시 문제 파일을 찾을 수 없다는 문구 삭제
+- [Issue #11](https://github.com/dltkdgns00/BOJ-extension/issues/11) - Bug Issue
+  - Windows에서 폴더 생성시 폴더 이름에 특수문자가 포함되어 있을 경우 폴더가 생성되지 않는 버그 수정
+  - 문제 제출 페이지 이동 시 문제 파일을 찾을 수 없다는 문구 삭제
 
 ## [1.3.3] - 2025-04-05
 

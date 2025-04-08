@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
+import { platform } from "os";
 
 /**
  * 문제 번호를 기반으로 워크스페이스에서 소스 코드 파일을 찾는 함수
@@ -90,6 +91,14 @@ export async function findSourceFileByProblemNumber(
 			if (files.length > 0) {
 				foundFiles = foundFiles.concat(files);
 			}
+			if (platform.name === "win32") {
+				// Windows에서만 사용하는 패턴
+				const windowsPattern = `**/${problemNumber}번 - */*.${extension}`;
+				const windowsFiles = await vscode.workspace.findFiles(windowsPattern);
+				if (windowsFiles.length > 0) {
+					foundFiles = foundFiles.concat(windowsFiles);
+				}
+			}
 		}
 
 		// 3. 여전히 파일을 찾지 못했다면, 문제 번호를 포함한 폴더 내의 모든 파일을 검색
@@ -107,25 +116,25 @@ export async function findSourceFileByProblemNumber(
 		// 한 개의 파일만 찾은 경우
 		if (foundFiles.length === 1) {
 			return foundFiles[0].fsPath;
+		} else if (foundFiles.length !== 0 && foundFiles.length > 1) {
+			// 여러 파일이 있을 경우 사용자에게 선택하도록 함
+			const fileOptions = foundFiles.map((file) => {
+				const fileName = path.basename(file.fsPath);
+				const dirName = path.basename(path.dirname(file.fsPath));
+				return {
+					label: fileName,
+					description: dirName,
+					detail: file.fsPath,
+					file: file.fsPath,
+				};
+			});
+
+			const selectedFile = await vscode.window.showQuickPick(fileOptions, {
+				placeHolder: `${problemNumber}번 문제의 여러 파일이 발견되었습니다. 사용할 파일을 선택하세요.`,
+			});
+
+			return selectedFile ? selectedFile.file : undefined;
 		}
-
-		// 여러 파일이 있을 경우 사용자에게 선택하도록 함
-		const fileOptions = foundFiles.map((file) => {
-			const fileName = path.basename(file.fsPath);
-			const dirName = path.basename(path.dirname(file.fsPath));
-			return {
-				label: fileName,
-				description: dirName,
-				detail: file.fsPath,
-				file: file.fsPath,
-			};
-		});
-
-		const selectedFile = await vscode.window.showQuickPick(fileOptions, {
-			placeHolder: `${problemNumber}번 문제의 여러 파일이 발견되었습니다. 사용할 파일을 선택하세요.`,
-		});
-
-		return selectedFile ? selectedFile.file : undefined;
 	} catch (error) {
 		console.error("파일 검색 중 오류 발생:", error);
 		vscode.window.showErrorMessage(

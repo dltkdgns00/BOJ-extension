@@ -196,13 +196,13 @@ function generateHtml(
 				}
 
           <section id="sample-IOs" class="problem-section">
+          <div class="test-case-button-container">
+            <button id="run-test-case" class="run-test-button">테스트 케이스 실행</button>
+            <button id="submit-problem" class="submit-button">제출 페이지로 이동</button>
+          </div>
           ${problemData
 						.sampleInputs!.map(
 							(input, index) => `
-            <div class="test-case-button-container">
-              <button id="run-test-case" class="run-test-button">테스트 케이스 실행</button>
-              <button id="submit-problem" class="submit-button">제출 페이지로 이동</button>
-            </div>
             <div class="sample-container">
               <div class="sample-box">
                 <h2>예제 입력 ${index + 1}</h2>
