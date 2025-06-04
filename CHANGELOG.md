@@ -1,5 +1,12 @@
 # Change Log
 
+## [1.3.6] - 2025-06-04
+
+### Bug Fixed
+
+- [Issue #12](https://github.com/dltkdgns00/BOJ-extension/issues/12) - Bug Issue
+  - python3 언어로 테스트 케이스를 실행할 때, `python3` 명령어가 제대로 작동하지 않는 버그 수정
+
 ## [1.3.5] - 2025-04-08
 
 ### Bug Fixed

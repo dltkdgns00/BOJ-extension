@@ -175,6 +175,13 @@ function getProcessIO(extension: string, filePath: string) {
 		);
 		return spawn(`${dirName}/${objectFileURL}`);
 	} else if (extension === "py") {
-		return spawn("python3", [filePath]);
+		try {
+			// python3 명령어를 먼저 시도
+			execSync("python3 --version", { stdio: "ignore" });
+			return spawn("python3", [filePath]);
+		} catch (error) {
+			// python3가 없으면 python 명령어 사용
+			return spawn("python", [filePath]);
+		}
 	}
 }
