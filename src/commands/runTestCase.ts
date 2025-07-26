@@ -55,6 +55,10 @@ export async function runTestCase(
 		const config = vscode.workspace.getConfiguration("BOJ");
 		const extension = config.get<string>("extension", "");
 
+		// 시간 제한 파싱 (초 단위)
+		const timeLimit = parseTimeLimit(sp.limit);
+		const timeLimitMs = timeLimit * 1000; // 밀리초로 변환
+
 		const maxWidth = 40;
 
 		const preMessage1 = centerText(` ${probNum}. ${sp.title} `, maxWidth);
@@ -62,6 +66,7 @@ export async function runTestCase(
 
 		outputChannel.appendLine(preMessage1);
 		outputChannel.appendLine(preMessage2);
+		outputChannel.appendLine(`시간 제한: ${timeLimit}초`);
 		outputChannel.appendLine(``);
 
 		filePath = filePath.replace(/\\/g, "/");
@@ -87,6 +92,17 @@ export async function runTestCase(
 			return new Promise<void>((resolve, reject) => {
 				const processIO = getProcessIO(extension, filePath!);
 				let outputData = "";
+				let isTimeout = false;
+
+				// 문제별 시간 제한 사용 (최소 1초, 최대 10초)
+				const actualTimeLimit = Math.max(1000, Math.min(timeLimitMs, 10000));
+				const timeout = setTimeout(() => {
+					isTimeout = true;
+					processIO!.kill('SIGKILL');
+					const timeoutMessage = `⏰ Test Case #${testCaseIndex + 1}: Time Limit Exceeded (${timeLimit}초 초과)`;
+					outputChannel.appendLine(timeoutMessage);
+					resolve();
+				}, actualTimeLimit);
 
 				processIO!.stdout.on("data", (data) => {
 					outputData += data.toString();
@@ -98,6 +114,12 @@ export async function runTestCase(
 				});
 
 				processIO!.on("close", (code) => {
+					clearTimeout(timeout);
+					
+					if (isTimeout) {
+						return; // 이미 타임아웃 처리됨
+					}
+
 					const actualOutput = outputData.trim();
 					const isPassed = actualOutput === expectedOutput.trim();
 					const message = createOutputMessage(
@@ -112,8 +134,15 @@ export async function runTestCase(
 				});
 
 				processIO!.on("error", (err) => {
+					clearTimeout(timeout);
 					console.error(`에러: ${err}`);
 					outputData += err.toString();
+					
+					if (!isTimeout) {
+						const errorMessage = `❌ Test Case #${testCaseIndex + 1}: Runtime Error\n${err.toString()}`;
+						outputChannel.appendLine(errorMessage);
+						resolve();
+					}
 				});
 
 				processIO!.stdin.write(input);
@@ -143,6 +172,26 @@ function centerText(text, maxWidth) {
 	return "-".repeat(paddingLeft) + text + "-".repeat(paddingRight);
 }
 
+function parseTimeLimit(limitString: string | null): number {
+	if (!limitString) {
+		return 2; // 기본값 2초
+	}
+
+	// "시간 제한: 2 초" 형태에서 숫자 추출
+	const match = limitString.match(/(\d+(?:\.\d+)?)\s*초/);
+	if (match) {
+		return parseFloat(match[1]);
+	}
+
+	// "Time limit: 2 seconds" 형태에서 숫자 추출
+	const englishMatch = limitString.match(/(\d+(?:\.\d+)?)\s*seconds?/i);
+	if (englishMatch) {
+		return parseFloat(englishMatch[1]);
+	}
+
+	return 2; // 파싱 실패 시 기본값 2초
+}
+
 function getProcessIO(extension: string, filePath: string) {
 	if (extension === "c") {
 		const objectFileURL = filePath.replace(/\.[^/.]+$/, "");
@@ -166,6 +215,7 @@ function getProcessIO(extension: string, filePath: string) {
 			cwd: path.dirname(filePath),
 			env: {
 				...process.env,
+				// eslint-disable-next-line @typescript-eslint/naming-convention
 				RUSTC_FLAGS: "-D tempdir=/tmp",
 			},
 		};
