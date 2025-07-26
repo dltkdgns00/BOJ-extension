@@ -1,5 +1,16 @@
 # Change Log
 
+## [1.3.7] - 2025-07-26
+
+### Feature Added
+
+- [Issue #14](https://github.com/dltkdgns00/BOJ-extension/issues/14) - Bug Issue
+  - 테스트 케이스 제출 후 시간초과일 경우 시간 초과 출력이 안되는 문제.  
+  → 실제 백준 문제의 시간제한을 가져와서 시간 초과일 경우 시간 초과 출력이 되도록 수정
+
+- [Issue #16](https://github.com/dltkdgns00/BOJ-extension/issues/16) - Request
+  - 동일한 문제를 다른 언어로도 풀 수 있도록 기능 추가
+
 ## [1.3.6] - 2025-06-04
 
 ### Bug Fixed
@@ -47,7 +58,7 @@
 
 ### Feature Added
 
-- [Issue #9](https://github.com/dltkdgns00/BOJ-extension/issues/9) - Request: Add a feature to move to submit page on boj
+- [Issue #9](https://github.com/dltkdgns00/BOJ-extension/issues/9) - Request
   - 문제 보기 페이지에서 제출 페이지로 이동하는 버튼 추가
 - BOJ-EX 사이드 바 추가
   - 기존에 존재하던 커맨드들을 사이드 바에서 버튼을 클릭하여 실행할 수 있도록 변경

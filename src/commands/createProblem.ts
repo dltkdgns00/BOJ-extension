@@ -82,7 +82,17 @@ export function createProblem(context: vscode.ExtensionContext) {
 					vscode.workspace.workspaceFolders![0].uri.fsPath,
 					folderName
 				);
-				fs.mkdirSync(folderPath);
+
+				// 1. 폴더 생성 (이미 존재해도 계속 진행)
+				try {
+					fs.mkdirSync(folderPath);
+				} catch (error) {
+					if (error instanceof Error && (error as any).code !== "EEXIST") {
+						// EEXIST가 아닌 다른 에러는 처리
+						throw error;
+					}
+					// 폴더가 이미 존재하는 경우는 무시하고 계속 진행
+				}
 
 				// 파일명 생성
 				let fileName = "";
@@ -106,24 +116,82 @@ export function createProblem(context: vscode.ExtensionContext) {
 					readme
 				);
 
-				// README.md 파일 내용
-				const readmeContent = `# ${problemNumber}번: ${problemName} - <img src="${
-					tier.svg
-				}" style="height:20px" /> ${
-					tier.name
-				}\n\n<!-- performance -->\n\n<!-- 문제 제출 후 깃허브에 푸시를 했을 때 제출한 코드의 성능이 입력될 공간입니다.-->\n\n<!-- end -->\n\n## 문제\n\n[문제 링크](https://boj.kr/${problemNumber})\n\n${cleanHtmlContent(
-					sp.description
-				)}\n\n## 입력\n\n${cleanHtmlContent(
-					sp.input
-				)}\n\n## 출력\n\n${cleanHtmlContent(
-					sp.output
-				)}\n\n## 소스코드\n\n[소스코드 보기](${fileName.replace(/ /g, "%20")})`;
-				const encoder = new TextEncoder();
-				const readmeData = encoder.encode(readmeContent);
+				// 2. 코드 파일 생성
+				try {
+					// 파일이 이미 존재하는지 확인
+					let fileExists = false;
+					try {
+						await vscode.workspace.fs.stat(fnUri);
+						fileExists = true;
+					} catch {
+						// 파일이 존재하지 않으면 계속 진행
+					}
 
-				// 파일 생성
-				await vscode.workspace.fs.writeFile(fnUri, new Uint8Array());
-				await vscode.workspace.fs.writeFile(readmeUri, readmeData);
+					if (fileExists) {
+						// 파일이 이미 존재하는 경우
+						const action = await vscode.window.showWarningMessage(
+							`'${fileName}' 파일이 이미 존재합니다.`,
+							"기존 파일로 이동",
+							"덮어쓰기",
+							"취소"
+						);
+
+						if (action === "기존 파일로 이동") {
+							// 기존 파일을 열고 문제 보기만 실행
+							const document = await vscode.workspace.openTextDocument(fnUri);
+							await vscode.window.showTextDocument(document, {
+								viewColumn: vscode.ViewColumn.One,
+							});
+							
+							vscode.window.showInformationMessage(
+								`기존 '${fileName}' 파일로 이동했습니다.`
+							);
+							
+							showProblem(problemNumber, context);
+							return;
+						} else if (action === "덮어쓰기") {
+							// 덮어쓰기 진행
+							await vscode.workspace.fs.writeFile(fnUri, new Uint8Array());
+						} else {
+							// 취소
+							return;
+						}
+					} else {
+						// 새 파일 생성
+						await vscode.workspace.fs.writeFile(fnUri, new Uint8Array());
+					}
+				} catch (error) {
+					vscode.window.showErrorMessage(`'${fileName}' 파일 생성 중 오류가 발생했습니다.`);
+					console.log(error);
+					return;
+				}
+
+				// 3. README 파일 생성 (이미 존재하면 덮어쓰지 않음)
+				try {
+					try {
+						await vscode.workspace.fs.stat(readmeUri);
+						// README 파일이 이미 존재하는 경우는 덮어쓰지 않음
+					} catch {
+						// README 파일이 존재하지 않으면 생성
+						const readmeContent = `# ${problemNumber}번: ${problemName} - <img src="${
+							tier.svg
+						}" style="height:20px" /> ${
+							tier.name
+						}\n\n<!-- performance -->\n\n<!-- 문제 제출 후 깃허브에 푸시를 했을 때 제출한 코드의 성능이 입력될 공간입니다.-->\n\n<!-- end -->\n\n## 문제\n\n[문제 링크](https://boj.kr/${problemNumber})\n\n${cleanHtmlContent(
+							sp.description
+						)}\n\n## 입력\n\n${cleanHtmlContent(
+							sp.input
+						)}\n\n## 출력\n\n${cleanHtmlContent(
+							sp.output
+						)}\n\n## 소스코드\n\n[소스코드 보기](${fileName.replace(/ /g, "%20")})`;
+						const encoder = new TextEncoder();
+						const readmeData = encoder.encode(readmeContent);
+						await vscode.workspace.fs.writeFile(readmeUri, readmeData);
+					}
+				} catch (error) {
+					// README 파일 생성 실패는 경고만 표시하고 계속 진행
+					console.log("README 파일 생성 실패:", error);
+				}
 
 				// 왼쪽 분할 화면에 텍스트 에디터를 열기
 				const document = await vscode.workspace.openTextDocument(fnUri);
@@ -139,13 +207,13 @@ export function createProblem(context: vscode.ExtensionContext) {
 				showProblem(problemNumber, context);
 				headerComment(problemNumber);
 			} catch (error) {
-				if (error instanceof Error && (error as any).code === "EEXIST") {
-					vscode.window.showErrorMessage("이미 해당 문제의 폴더가 존재합니다.");
-				} else if (
+				if (
 					error instanceof Error &&
 					(error as any).code === "ERR_BAD_REQUEST"
 				) {
 					vscode.window.showErrorMessage("문제를 찾을 수 없습니다.");
+				} else {
+					vscode.window.showErrorMessage("파일 생성 중 오류가 발생했습니다.");
 				}
 				console.log(error);
 				return;
