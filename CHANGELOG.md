@@ -1,12 +1,22 @@
 # Change Log
 
+## [1.3.8] - 2026-01-15
+
+### Bug Fixed
+
+- [Issue #17](https://github.com/dltkdgns00/BOJ-extension/issues/17) - Bug Issue
+  - 테스트 케이스 실행 시 출력 결과 비교 방식을 개선 (라인 단위 비교, 줄 끝 공백 및 OS별 개행 문자 차이 무시)
+- [Issue #15](https://github.com/dltkdgns00/BOJ-extension/issues/15) - Bug Issue
+  - 여러 언어로 문제 풀이 시 GitHub Actions가 정상 동작하지 않는 문제 수정 (워크플로우 생성 시 언어 고정 제거)
+
 ## [1.3.7] - 2025-07-26
 
 ### Feature Added
 
 - [Issue #14](https://github.com/dltkdgns00/BOJ-extension/issues/14) - Bug Issue
+
   - 테스트 케이스 제출 후 시간초과일 경우 시간 초과 출력이 안되는 문제.  
-  → 실제 백준 문제의 시간제한을 가져와서 시간 초과일 경우 시간 초과 출력이 되도록 수정
+    → 실제 백준 문제의 시간제한을 가져와서 시간 초과일 경우 시간 초과 출력이 되도록 수정
 
 - [Issue #16](https://github.com/dltkdgns00/BOJ-extension/issues/16) - Request
   - 동일한 문제를 다른 언어로도 풀 수 있도록 기능 추가
