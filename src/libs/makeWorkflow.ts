@@ -5,32 +5,7 @@ import yaml from "yaml";
 
 export async function makeWorkflow() {
 	const config = vscode.workspace.getConfiguration("BOJ");
-	const extension = config.get<string>("extension", "");
 	const author = config.get<string>("author", "");
-	var exNumber;
-	if (extension === "cpp") {
-		exNumber = 1001;
-	} else if (extension === "java") {
-		exNumber = 1002;
-	} else if (extension === "py") {
-		exNumber = 1003;
-	} else if (extension === "c") {
-		exNumber = 1004;
-	} else if (extension === "rs") {
-		exNumber = 1005;
-	} else if (extension === "rb") {
-		exNumber = 68;
-	} else if (extension === "kt") {
-		exNumber = 69;
-	} else if (extension === "swift") {
-		exNumber = 74;
-	} else if (extension === "cs") {
-		exNumber = 86;
-	} else if (extension === "js") {
-		exNumber = 17;
-	} else if (extension === "go") {
-		exNumber = 12;
-	}
 
 	try {
 		// 폴더명 생성
@@ -82,7 +57,6 @@ export async function makeWorkflow() {
 							with: {
 								path: "not_filled_files.txt",
 								user_id: author,
-								language_id: exNumber,
 							},
 						},
 						{
